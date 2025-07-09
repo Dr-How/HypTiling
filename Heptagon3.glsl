@@ -57,38 +57,6 @@ vec2 inT3(vec2 z){return B(B(d(ina(z))));}
 vec2 T4(vec2 z){return C(ina(B(z)));}
 vec2 inT4(vec2 z){return inB(a(inC(z)));}
 
-// Determine if a point is inside any of the fundamental domains and return corresponding color 
-vec4 insideSomeFD(vec2 uv) {
-    vec2 w = uv;
-    return vec4(0.) +
-    insideFD(w) * vec4(0.5, 0.3, 0.3, 1.0) +
-    insideFD(a(w)) * vec4(0.4, 0.6, 0.3, 1.0) +
-    insideFD(ina(w)) * vec4(0.9, 0.3, 0.3, 1.0) +
-    insideFD(B(w)) * vec4(0.6, 0.5, 0.2, 1.0) +
-    insideFD(inB(w)) * vec4(0.4, 0.5, 0.7, 1.0) +
-    insideFD(C(w)) * vec4(0.1, 0.2, 0.7, 1.0) +
-    insideFD(inC(w)) * vec4(0.7, 0.2, 0.7, 1.0) +
-    insideFD(d(w)) * vec4(0.7, 0.8, 0.7, 1.0) +
-    insideFD(inB(ina(w))) * vec4(0.9, 0.8, 0.3, 1.0) +
-    insideFD(inC(ina(w))) * vec4(0.7, 0.9, 0.5, 1.0) +
-    insideFD(d(ina(w))) * vec4(0.8, 0.6, 0.8, 1.0) +
-    insideFD(d(a(w))) * vec4(0.9, 0.8, 0.6, 1.0) ;
-}
-
-vec2 fun2(int index,vec2 z) {
-    switch(index) {
-        case 0: return T1(z); break;
-        case 1: return inT1(z); break;
-        case 2: return T2(z); break;
-        case 3: return inT2(z); break;
-        case 4: return T3(z); break;
-        case 5: return inT3(z); break;
-        case 6: return T4(z); break;
-        case 7: return inT4(z); break;
-        default:return z; break; // 处理无效索引
-    }
-}
-
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec2 uv = fragCoord/iResolution.xy-0.5;
     uv *= 2.*vec2(iResolution.x/iResolution.y,1.);
