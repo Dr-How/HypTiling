@@ -123,19 +123,19 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
     //fragColor += smoothstep(0.5, 0.0, length(uv));
 
-    // Color the inside of the fundamental domain
-    vec3 col1 = vec3(0.5, 0.3, 0.3);
-    vec3 col2 = vec3(0.4, 0.6, 0.3);
-    vec3 col3 = vec3(0.9, 0.3, 0.3);
-    vec3 col4 = vec3(0.6, 0.5, 0.2);
-    vec3 col5 = vec3(0.4, 0.5, 0.7);
-    vec3 col6 = vec3(0.1, 0.2, 0.7);
-    vec3 col7 = vec3(0.7, 0.2, 0.7);
-    vec3 col8 = vec3(0.7, 0.8, 0.7);
-    vec3 col9 = vec3(0.9, 0.8, 0.3);
-    vec3 colA = vec3(0.7, 0.9, 0.5);
-    vec3 colB = vec3(0.8, 0.6, 0.8);
-    vec3 colC = vec3(0.9, 0.8, 0.6);
+    // 12 well-distinguishable, visually pleasing tile colors
+    vec3 col1 = vec3(0.90, 0.10, 0.15);   // vivid red
+    vec3 col2 = vec3(0.00, 0.60, 0.30);   // emerald green
+    vec3 col3 = vec3(0.10, 0.35, 0.85);   // strong blue
+    vec3 col4 = vec3(1.00, 0.80, 0.10);   // bright yellow
+    vec3 col5 = vec3(0.60, 0.20, 0.80);   // purple
+    vec3 col6 = vec3(0.00, 0.75, 0.75);   // turquoise
+    vec3 col7 = vec3(1.00, 0.50, 0.00);   // orange
+    vec3 col8 = vec3(0.40, 0.80, 0.10);   // lime green
+    vec3 col9 = vec3(0.00, 0.50, 1.00);   // cyan blue
+    vec3 colA = vec3(1.00, 0.20, 0.60);   // magenta
+    vec3 colB = vec3(0.60, 0.40, 0.10);   // ochre
+    vec3 colC = vec3(0.20, 0.80, 0.60);   // mint
 
     // fragColor = mix(fragColor, insideSomeFD(uv), insideSomeFD(uv).w);
     fragColor += vec4(col1, 1.) * insideFD(uv);

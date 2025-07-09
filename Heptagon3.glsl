@@ -5,7 +5,6 @@ Tiling data computed using exterior program.
 
 List of heptagonal monohedral tilings:
 Tiling 1 : https://www.shadertoy.com/view/t3t3Df
-           https://www.shadertoy.com/view/t3cGDs
 Tiling 2 : https://www.shadertoy.com/view/XfycRy
 Tiling 3 : https://www.shadertoy.com/view/33y3R1
 */
@@ -124,19 +123,19 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         uv = fold(uv, o4, o6, o3, o7).xy;
         uv = fold(uv, o6, o2, o5, o3).xy;
     }
-    // Color the inside of the fundamental domain
-    vec3 col1 = vec3(0.5, 0.3, 0.3);
-    vec3 col2 = vec3(0.4, 0.6, 0.3);
-    vec3 col3 = vec3(0.9, 0.3, 0.3);
-    vec3 col4 = vec3(0.6, 0.5, 0.2);
-    vec3 col5 = vec3(0.4, 0.5, 0.7);
-    vec3 col6 = vec3(0.1, 0.2, 0.7);
-    vec3 col7 = vec3(0.7, 0.2, 0.7);
-    vec3 col8 = vec3(0.7, 0.8, 0.7);
-    vec3 col9 = vec3(0.9, 0.8, 0.3);
-    vec3 colA = vec3(0.7, 0.9, 0.5);
-    vec3 colB = vec3(0.8, 0.6, 0.8);
-    vec3 colC = vec3(0.9, 0.8, 0.6);
+    // 12 well-distinguishable, visually pleasing tile colors
+    vec3 col1 = vec3(0.90, 0.10, 0.15);   // vivid red
+    vec3 col2 = vec3(0.00, 0.60, 0.30);   // emerald green
+    vec3 col3 = vec3(0.10, 0.35, 0.85);   // strong blue
+    vec3 col4 = vec3(1.00, 0.80, 0.10);   // bright yellow
+    vec3 col5 = vec3(0.60, 0.20, 0.80);   // purple
+    vec3 col6 = vec3(0.00, 0.75, 0.75);   // turquoise
+    vec3 col7 = vec3(1.00, 0.50, 0.00);   // orange
+    vec3 col8 = vec3(0.40, 0.80, 0.10);   // lime green
+    vec3 col9 = vec3(0.00, 0.50, 1.00);   // cyan blue
+    vec3 colA = vec3(1.00, 0.20, 0.60);   // magenta
+    vec3 colB = vec3(0.60, 0.40, 0.10);   // ochre
+    vec3 colC = vec3(0.20, 0.80, 0.60);   // mint
     
     // Color the inside of the fundamental domain
     // fragColor = mix(fragColor, insideSomeFD(uv), step(0.5, insideSomeFD(uv).w));
