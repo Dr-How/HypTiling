@@ -3,7 +3,12 @@ Based on an ongoing research project of the group of Wang Erxiao from Zhejiang N
 Part of the code is contributed by qingshu and Wu.
 Tiling data computed using exterior program.
 
+基于浙江师范大学王二小课题组正在进行的科研项目。
+部分代码由qingshu和Wu贡献。
+平铺数据使用外部程序计算。
+
 List of heptagonal monohedral tilings:
+七边形单面体平铺列表：
 Tiling 1 : https://www.shadertoy.com/view/t3t3Df
 Tiling 2 : https://www.shadertoy.com/view/XfycRy
 Tiling 3 : https://www.shadertoy.com/view/33y3R1
@@ -11,54 +16,132 @@ Tiling 3 : https://www.shadertoy.com/view/33y3R1
 
 #include "Common.glsl"
 
-vec2 P0 = vec2(0.300742618746379, 0);
-vec2 P1 = vec2(0.187509955772656, 0.235130047455799);
-vec2 P2 = vec2(-0.066921528403913, 0.293202373398501);
-vec2 P3 = vec2(-0.407880227210424, 0.12629188065801);
-vec2 P4 = vec2(-0.394332095466785, -0.012650020343597);
-vec2 P5 = vec2(-0.189392617382025, -0.167766507309416);
-vec2 P6 = vec2(0.21988773883909, -0.167364950094866);
+// ============================================================================
+// FUNDAMENTAL DOMAIN VERTICES - 基本域顶点
+// ============================================================================
+// These are the vertices of a hyperbolic heptagon
+// 这些是双曲七边形的顶点
+// The coordinates are computed to create a regular heptagon in hyperbolic geometry
+// 坐标经过计算以在双曲几何中创建正七边形
+vec2 P0 = vec2(0.300742618746379, 0);                    // Rightmost vertex / 最右顶点
+vec2 P1 = vec2(0.187509955772656, 0.235130047455799);    // Upper right vertex / 右上顶点
+vec2 P2 = vec2(-0.066921528403913, 0.293202373398501);   // Upper vertex / 上顶点
+vec2 P3 = vec2(-0.407880227210424, 0.12629188065801);    // Upper left vertex / 左上顶点
+vec2 P4 = vec2(-0.394332095466785, -0.012650020343597);  // Lower left vertex / 左下顶点
+vec2 P5 = vec2(-0.189392617382025, -0.167766507309416);  // Lower vertex / 下顶点
+vec2 P6 = vec2(0.21988773883909, -0.167364950094866);    // Lower right vertex / 右下顶点
 
+// ============================================================================
+// FUNDAMENTAL DOMAIN DETECTION - 基本域检测
+// ============================================================================
+// Check if a point is inside the fundamental heptagon domain
+// 检查点是否在基本七边形域内
+// Uses hyperbolic geodesics to define the boundary of the heptagon
+// 使用双曲测地线定义七边形的边界
 float insideFD(vec2 st){
-    float side0=hypGeodesic(st,P0,P1);
-    float side1=hypGeodesic(st,P1,P2);
-    float side2=hypGeodesic(st,P2,P3);
-    float side3=hypGeodesic(st,P3,P4);
-    float side4=hypGeodesic(st,P4,P5);
-    float side5=hypGeodesic(st,P5,P6);
-    float side6=hypGeodesic(st,P6,P0);
+    // Check if point is outside each of the 7 sides of the heptagon
+    // 检查点是否在七边形7条边的外部
+    float side0=hypGeodesic(st,P0,P1);  // Side from P0 to P1 / 从P0到P1的边
+    float side1=hypGeodesic(st,P1,P2);  // Side from P1 to P2 / 从P1到P2的边
+    float side2=hypGeodesic(st,P2,P3);  // Side from P2 to P3 / 从P2到P3的边
+    float side3=hypGeodesic(st,P3,P4);  // Side from P3 to P4 / 从P3到P4的边
+    float side4=hypGeodesic(st,P4,P5);  // Side from P4 to P5 / 从P4到P5的边
+    float side5=hypGeodesic(st,P5,P6);  // Side from P5 to P6 / 从P5到P6的边
+    float side6=hypGeodesic(st,P6,P0);  // Side from P6 to P0 / 从P6到P0的边
+    
+    // Multiply all side checks - if any side returns 1 (outside), result is 1
+    // 将所有边的检查结果相乘 - 如果任何边返回0（外部），结果为0
     float c=side0*side1*side2*side3*side4*side5*side6;
     return c;
 }
 
-// Generators of the symmetry group of the tiling
+// ============================================================================
+// SYMMETRY GROUP GENERATORS - 对称群生成元
+// ============================================================================
+// These functions generate the symmetry group of the hyperbolic heptagon tiling
+// 这些函数生成双曲七边形平铺的对称群
+// Each generator is a hyperbolic isometry that preserves the tiling pattern
+// 每个生成元都是保持平铺模式的双曲等距变换
+
+// 120-degree rotation around vertex P1 (creates triangular symmetry)
+// 围绕顶点P1旋转120度（创建三角形对称性）
 vec2 a(vec2 z) {return hypRotate3(P1,z);}
+// Inverse of a (240-degree rotation, equivalent to a²)
+// a的逆（240度旋转，等价于a²）
 vec2 ina(vec2 z) {return a(a(z));}
+
+// 180-degree rotation around the midpoint of P6 and P0 (reflection symmetry)
+// 围绕P6和P0的中点旋转180度（反射对称性）
 vec2 b(vec2 z) {return hypRotate2(hypMid(P6,P0),z);}
+
+// Hyperbolic translation that maps P6 to P5 and P2 to P3
+// 将P6映射到P5，P2映射到P3的双曲平移
 vec2 c(vec2 z){return hypTranslate(P6, P5, P2, P3, z);}
+// Inverse of c
+// c的逆
 vec2 inc(vec2 z){return hypTranslate(P2, P3, P6, P5, z);}
+
+// 180-degree rotation around the midpoint of P4 and P5
+// 围绕P4和P5的中点旋转180度
 vec2 d(vec2 z) {return hypRotate2(hypMid(P4,P5),z);}
+
+// 180-degree rotation around the midpoint of P3 and P4
+// 围绕P3和P4的中点旋转180度
 vec2 e(vec2 z) {return hypRotate2(hypMid(P3,P4),z);}
 
-// Translational symmetries of the tiling
+// ============================================================================
+// TRANSLATIONAL SYMMETRIES - 平移对称性
+// ============================================================================
+// These are composite transformations that create the periodic structure
+// 这些是创建周期结构的复合变换
+// Each T function represents a different translation direction in the tiling
+// 每个T函数代表平铺中不同的平移方向
+
+// Translation T1: combination of b and e transformations
+// 平移T1：b和e变换的组合
 vec2 T1(vec2 z){return b(e(z));}
 vec2 inT1(vec2 z){return e(b(z));}
+
+// Translation T2: combination of inc, b, and ina transformations
+// 平移T2：inc、b和ina变换的组合
 vec2 T2(vec2 z){return inc(b(ina(z)));}
 vec2 inT2(vec2 z){return a(b(c(z)));}
+
+// Translation T3: combination of ina, e, a, and inc transformations
+// 平移T3：ina、e、a和inc变换的组合
 vec2 T3(vec2 z){return ina(e(a(inc(z))));}
 vec2 inT3(vec2 z){return c(ina(e(a(z))));}
+
+// Translation T4: combination of ina and d transformations
+// 平移T4：ina和d变换的组合
 vec2 T4(vec2 z){return ina(d(ina(d(z))));}
 vec2 inT4(vec2 z){return d(a(d(a(z))));}
 
+// ============================================================================
+// MAIN RENDERING FUNCTION - 主渲染函数
+// ============================================================================
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+    // Convert pixel coordinates to normalized coordinates centered at origin
+    // 将像素坐标转换为以原点为中心的归一化坐标
     vec2 uv = fragCoord/iResolution.xy-0.5;
+    // Adjust for aspect ratio to maintain circular shape
+    // 调整宽高比以保持圆形
     uv *= 2.*vec2(iResolution.x/iResolution.y,1.);
+    
+    // Initialize output color to black
+    // 将输出颜色初始化为黑色
     fragColor=vec4(0., 0., 0., 1.);
-
-    // Poincare disk
+    
+    // Create smooth boundary for the Poincare disk (unit circle)
+    // 为Poincare圆盘（单位圆）创建平滑边界
+    // Points outside the disk are darkened to create the boundary effect
+    // 圆盘外的点变暗以创建边界效果
     float shade = 1. - smoothstep(0.99, 1.0, length(uv));
 
-    // Mouse searching the suitable vertices
+    // Code for interactive vertex placement and testing
+    // 用于交互式顶点放置和测试的代码
+    // Uncomment to enable mouse-based vertex manipulation
+    // 取消注释以启用基于鼠标的顶点操作
     // vec4 m = iMouse;
     // vec2 p0 = vec2(0.0);
     // if(m.z>0. && m.w < 0. || m.z < 0.){
@@ -92,31 +175,48 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     //     hypGeodesic(uv, p0, p3) *
     // 1.))*.3+.7;
 
-    // Vertices of the fundamental octagon
-    vec2 o0 = vec2(-0.625, 0.545);
-    // o0 = inT1(P0);
-    vec2 o1 = T1(o0);
-    vec2 o2 = T2(o1);
-    vec2 o3 = inT1(o2);
-    vec2 o4 = T4(o3);
-    vec2 o5 = T3(o4);
-    vec2 o6 = inT4(o5);
-    vec2 o7 = inT2(o6);
-    // vec2 o8 = inT3(o7);
+    // ============================================================================
+    // FUNDAMENTAL OCTAGON - 基本八边形
+    // ============================================================================
+    // Define vertices of a fundamental octagon for testing and visualization
+    // 定义用于测试和可视化的基本八边形的顶点
+    // This octagon represents a larger fundamental domain in the tiling
+    // 这个八边形代表平铺中基本域
+    // The order of the translations are obtained from the relation given by GAP
+    // 平移的顺序是从GAP中得到的
+    vec2 o0 = vec2(-0.625, 0.545);  // Starting vertex / 起始顶点
+    // o0 = inT1(P0);  // Alternative: derive from fundamental heptagon / 替代方案：从基本七边形导出
+    vec2 o1 = T1(o0);  // Apply translation T1 / 应用平移T1
+    vec2 o2 = T2(o1);  // Apply translation T2 / 应用平移T2
+    vec2 o3 = inT1(o2); // Apply inverse of T1 / 应用T1的逆
+    vec2 o4 = T4(o3);   // Apply translation T4 / 应用平移T4
+    vec2 o5 = T3(o4);   // Apply translation T3 / 应用平移T3
+    vec2 o6 = inT4(o5); // Apply inverse of T4 / 应用T4的逆
+    vec2 o7 = inT2(o6); // Apply inverse of T2 / 应用T2的逆
+    // vec2 o8 = inT3(o7); // Additional vertex if needed / 如果需要额外的顶点
 
-    // Shade the interior of the octagon
+    // Shade the interior of the octagon with a darker color
+    // 用较暗的颜色为八边形内部着色
+    // This creates a visual boundary for the fundamental domain
+    // 这为基本域创建视觉边界
     shade *= step(1.0, (1.-
-        hypGeodesic(uv, o4, o0) *
-        hypGeodesic(uv, o5, o4) *
-        hypGeodesic(uv, o7, o5) *
-        hypGeodesic(uv, o1, o7) *
-        hypGeodesic(uv, o2, o1) *
-        hypGeodesic(uv, o6, o2) *
-        hypGeodesic(uv, o3, o6) *
-        hypGeodesic(uv, o0, o3) *
+        hypGeodesic(uv, o4, o0) *  // Side from o4 to o0 / 从o4到o0的边
+        hypGeodesic(uv, o5, o4) *  // Side from o5 to o4 / 从o5到o4的边
+        hypGeodesic(uv, o7, o5) *  // Side from o7 to o5 / 从o7到o5的边
+        hypGeodesic(uv, o1, o7) *  // Side from o1 to o7 / 从o1到o7的边
+        hypGeodesic(uv, o2, o1) *  // Side from o2 to o1 / 从o2到o1的边
+        hypGeodesic(uv, o6, o2) *  // Side from o6 to o2 / 从o6到o2的边
+        hypGeodesic(uv, o3, o6) *  // Side from o3 to o6 / 从o3到o6的边
+        hypGeodesic(uv, o0, o3) *  // Side from o0 to o3 / 从o0到o3的边
     1.))*.3+.7;
 
-    // Test fixedPoints and fold
+    // ============================================================================
+    // TESTING FUNCTIONS (COMMENTED OUT) - 测试函数（已注释）
+    // ============================================================================
+    // Code for testing fixed points and folding functions
+    // 用于测试不动点和折叠函数的代码
+    // Uncomment to visualize fixed points and folding behavior
+    // 取消注释以可视化不动点和折叠行为
     // vec4 fixPts = fixedPoints(o3, o0, o2, o1);
     // shade *= step(0.1, abs(length(uv-fixPts.xy)));
     // shade *= step(0.1, abs(length(uv-fixPts.zw)));
@@ -124,30 +224,56 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     // vec3 foldedUV = fold(uv, o3, o0, o2, o1);
     // shade += 1. - smoothstep(0.0, 0.01, abs(foldedUV.z-0.0));
 
-    // Fold into a fundamental domain modulo translations
+    // ============================================================================
+    // FOLDING INTO FUNDAMENTAL DOMAIN - 折叠到基本域
+    // ============================================================================
+    // Apply folding transformations to reduce any point to the fundamental domain
+    // 应用折叠变换将任意点归约到基本域
+    // This ensures we only need to color one fundamental domain and replicate it
+    // 这确保我们只需要为一个基本域着色并复制它
     for(int i = 0; i < 6; i++) {
-        uv = fold(uv, o3, o0, o2, o1).xy;
-        uv = fold(uv, o0, o4, o7, o5).xy;
-        uv = fold(uv, o7, o1, o6, o2).xy;
-        uv = fold(uv, o4, o5, o3, o6).xy;
+        // Fold using different pairs of geodesics to cover all cases
+        // 使用不同的测地线对进行折叠以覆盖所有情况
+        uv = fold(uv, o3, o0, o2, o1).xy;  // Fold across geodesic o3-o0 vs o2-o1 / 跨测地线o3-o0 vs o2-o1折叠
+        uv = fold(uv, o0, o4, o7, o5).xy;  // Fold across geodesic o0-o4 vs o7-o5 / 跨测地线o0-o4 vs o7-o5折叠
+        uv = fold(uv, o7, o1, o6, o2).xy;  // Fold across geodesic o7-o1 vs o6-o2 / 跨测地线o7-o1 vs o6-o2折叠
+        uv = fold(uv, o4, o5, o3, o6).xy;  // Fold across geodesic o4-o5 vs o3-o6 / 跨测地线o4-o5 vs o3-o6折叠
     }
 
+    // Alternative visualization: show distance to origin after folding
+    // 替代可视化：显示折叠后到原点的距离
     //fragColor += smoothstep(0.5, 0.0, length(uv));
 
-    // 12 well-distinguishable, visually pleasing tile colors
-    vec3 col1 = vec3(0.90, 0.10, 0.15);   // vivid red
-    vec3 col2 = vec3(0.00, 0.60, 0.30);   // emerald green
-    vec3 col3 = vec3(0.10, 0.35, 0.85);   // strong blue
-    vec3 col4 = vec3(1.00, 0.80, 0.10);   // bright yellow
-    vec3 col5 = vec3(0.60, 0.20, 0.80);   // purple
-    vec3 col6 = vec3(0.00, 0.75, 0.75);   // turquoise
-    vec3 col7 = vec3(1.00, 0.50, 0.00);   // orange
-    vec3 col8 = vec3(0.40, 0.80, 0.10);   // lime green
-    vec3 col9 = vec3(0.00, 0.50, 1.00);   // cyan blue
-    vec3 colA = vec3(1.00, 0.20, 0.60);   // magenta
-    vec3 colB = vec3(0.60, 0.40, 0.10);   // ochre
-    vec3 colC = vec3(0.20, 0.80, 0.60);   // mint
+    // ============================================================================
+    // COLOR PALETTE - 调色板
+    // ============================================================================
+    // Define 12 visually distinct and pleasing colors for the tiling
+    // 为平铺定义12种视觉上不同且美观的颜色
+    // Each color is carefully chosen to be distinguishable from others
+    // 每种颜色都经过精心选择，与其他颜色区分开来
+    vec3 col1 = vec3(0.90, 0.10, 0.15);   // vivid red / 鲜艳的红色
+    vec3 col2 = vec3(0.00, 0.60, 0.30);   // emerald green / 翠绿色
+    vec3 col3 = vec3(0.10, 0.35, 0.85);   // strong blue / 深蓝色
+    vec3 col4 = vec3(1.00, 0.80, 0.10);   // bright yellow / 亮黄色
+    vec3 col5 = vec3(0.60, 0.20, 0.80);   // purple / 紫色
+    vec3 col6 = vec3(0.00, 0.75, 0.75);   // turquoise / 青绿色
+    vec3 col7 = vec3(1.00, 0.50, 0.00);   // orange / 橙色
+    vec3 col8 = vec3(0.40, 0.80, 0.10);   // lime green / 酸橙绿
+    vec3 col9 = vec3(0.00, 0.50, 1.00);   // cyan blue / 青色蓝
+    vec3 colA = vec3(1.00, 0.20, 0.60);   // magenta / 洋红色
+    vec3 colB = vec3(0.60, 0.40, 0.10);   // ochre / 赭石色
+    vec3 colC = vec3(0.20, 0.80, 0.60);   // mint / 薄荷色
 
+    // ============================================================================
+    // TILING COLORING - 平铺着色
+    // ============================================================================
+    // Apply different colors to different transformed copies of the fundamental domain
+    // 为基本域的不同变换副本应用不同颜色
+    // Each line applies a symmetry transformation and colors the result
+    // 每一行应用一个对称变换并为结果着色
+    // The pattern creates a complete tiling with 12 distinct colors
+    // 该模式创建具有12种不同颜色的完整平铺
+    
     // fragColor = mix(fragColor, insideSomeFD(uv), insideSomeFD(uv).w);
     fragColor += vec4(col1, 1.) * insideFD(uv);
     fragColor += vec4(col2, 1.) * insideFD(ina(uv));
@@ -180,7 +306,15 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     fragColor += vec4(col9, 1.) * insideFD(e(a(e(uv))));
     fragColor += vec4(col9, 1.) * insideFD(ina(inc(inc(uv))));
 
-    // Coloring three generations suffices
+    // ============================================================================
+    // ALTERNATIVE COLORING METHOD (COMMENTED OUT) - 替代着色方法（已注释）
+    // ============================================================================
+    // More systematic approach using nested loops for coloring
+    // 使用嵌套循环进行着色的更系统的方法
+    // This method applies transformations in a more organized way
+    // 这种方法以更有组织的方式应用变换
+    // Coloring three generations suffices for complete coverage
+    // 着色三代足以完全覆盖
     // for (int i = 0; i < 8; i++) {
     //     vec2 w0 = fun2(i, uv);
     //     fragColor = mix(fragColor, insideSomeFD(w0), insideSomeFD(w0).w);
@@ -193,5 +327,11 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     //         }
     //     }
     // }
+    
+    // ============================================================================
+    // FINAL OUTPUT - 最终输出
+    // ============================================================================
+    // Apply the boundary shading to create the final image
+    // 应用边界着色以创建最终图像
     fragColor.rgb *= shade;
 }
