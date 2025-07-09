@@ -71,6 +71,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     //     p0 = m.xy/iResolution.xy-0.5;;
     //     p0 *= 2.*vec2(iResolution.x/iResolution.y,1.);
     // }
+    // p0 = P3;
     // shade *= step(0.05, length(uv-p0));
     // vec2 p1 = inT2(p0);
     // shade *= step(0.05, length(uv-p1));
@@ -86,6 +87,16 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     // shade *= step(0.05, length(uv-p6));
     // vec2 p7 = inT3(p6);
     // shade *= step(0.05, length(uv-p7));
+    // shade *= step(1.0, (1. -
+    //     hypGeodesic(uv, p1, p0) *
+    //     hypGeodesic(uv, p4, p1) *
+    //     hypGeodesic(uv, p6, p4) *
+    //     hypGeodesic(uv, p2, p6) *
+    //     hypGeodesic(uv, p7, p2) *
+    //     hypGeodesic(uv, p3, p7) *
+    //     hypGeodesic(uv, p5, p3) *
+    //     hypGeodesic(uv, p0, p5)
+    // ))*.3+.7;
 
     // Vertices of the fundamental octagon
     vec2 o0 = vec2(-0.77, 0.21);
