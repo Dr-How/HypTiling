@@ -1,6 +1,10 @@
 const float PI = 3.14159265358979323846;
 vec2 hypTranslate(vec2 z1, vec2 z);
 
+float[7] angles;
+float[7] edges;
+vec2[7] P;
+
 // ============================================================================
 // COMPLEX ARITHMETICS - 复数运算
 // ============================================================================
@@ -271,4 +275,47 @@ vec3 fold(vec2 uv, vec2 a, vec2 b, vec2 c, vec2 d) {
     // Return folded point and folding parameter
     // 返回折叠后的点和折叠参数
     return vec3(uvD, fract((d2 - shift)/d1));
+}
+
+// Rotate all points around P[i] and then rotate by a specific angle
+// 围绕P[i]旋转所有点，然后再旋转一个特定角度
+void collectiveRotate(int i){
+    // First, translate all points so that P[i] is at the origin
+    // 首先，将所有点平移，使P[i]位于原点
+    for (int j = 0; j < 7; j++){
+        P[j] = hypTranslate(P[i], P[j]);
+    }
+    // Compute the angle to rotate so that the previous point aligns with the desired angle
+    // 计算旋转角度，使前一个点与目标角度对齐
+    vec2 w = normalize(P[i-1]);
+    float theta = atan(w.y, w.x);
+    theta = angles[i] * PI / 180. - theta;
+    // Rotate all points around the origin by theta
+    // 围绕原点将所有点旋转theta角度
+    for (int j = 0; j < 7; j++){
+        P[j] = hypRotate(P[i], theta, P[j]);
+    }
+}
+
+// Set up the coordinates of the points based on edge lengths and angles
+// 根据边长和角度设置各点的坐标
+void coordinates() {
+    // For each edge, rotate and set the next point along the x-axis
+    // 对每条边，旋转并将下一个点放在x轴上
+    for (int i = 0; i < 6; i++){
+        collectiveRotate(i);
+        float x = edges[i] / 2.;
+        // Place the next point at the correct distance along the x-axis
+        // 将下一个点放在x轴上正确的距离处
+        P[i+1] = vec2((exp(x)-exp(-x))/(exp(x)+exp(-x)), 0.);
+    }
+
+    // Compute the centroid of all points
+    // 计算所有点的中心点
+    vec2 center = (P[0] + P[1] + P[2] + P[3] + P[4] + P[5] + P[6]) / 7.;
+    // Translate all points so that the centroid is at the origin
+    // 平移所有点，使中心点位于原点
+    for (int i = 0; i < 7; i++){
+        P[i] = hypTranslate(center, P[i]);
+    }
 }
