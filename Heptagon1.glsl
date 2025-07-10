@@ -23,15 +23,37 @@ Tiling 3 : https://www.shadertoy.com/view/33y3R1
 // 这些是双曲七边形的顶点
 // The coordinates are computed to create a regular heptagon in hyperbolic geometry
 // 坐标经过计算以在双曲几何中创建正七边形
-void init(){
-    P[0] = vec2(0.300742618746379, 0);                    // Rightmost vertex / 最右顶点
-    P[1] = vec2(0.187509955772656, 0.235130047455799);    // Upper right vertex / 右上顶点
-    P[2] = vec2(-0.066921528403913, 0.293202373398501);   // Upper vertex / 上顶点
-    P[3] = vec2(-0.407880227210424, 0.12629188065801);    // Upper left vertex / 左上顶点
-    P[4] = vec2(-0.394332095466785, -0.012650020343597);  // Lower left vertex / 左下顶点
-    P[5] = vec2(-0.189392617382025, -0.167766507309416);  // Lower vertex / 下顶点
-    P[6] = vec2(0.21988773883909, -0.167364950094866);    // Lower right vertex / 右下顶点
+
+void init() {
+    angles[0] = 121.12;
+    angles[1] = 120.0;
+    angles[2] = 130.0;
+    angles[3] = 100.0;
+    angles[4] = 125.0;
+    angles[5] = 135.0;
+    angles[6] = 108.88;
+    
+    edges[0] = 0.566256306735315;
+    edges[1] = 0.566256306735315; 
+    edges[2] = 0.854179974219264; 
+    edges[3] = 0.334459677626671; 
+    edges[4] = 0.570475204949615; 
+    edges[5] = 0.854166462392129; 
+    edges[6] = 0.402853231606247; 
+
+    for(int i = 0; i < 7; i++) {
+        P[i] = vec2(0.0);
+    }
 }
+// void init(){
+//     P[0] = vec2(0.300742618746379, 0);                    // Rightmost vertex / 最右顶点
+//     P[1] = vec2(0.187509955772656, 0.235130047455799);    // Upper right vertex / 右上顶点
+//     P[2] = vec2(-0.066921528403913, 0.293202373398501);   // Upper vertex / 上顶点
+//     P[3] = vec2(-0.407880227210424, 0.12629188065801);    // Upper left vertex / 左上顶点
+//     P[4] = vec2(-0.394332095466785, -0.012650020343597);  // Lower left vertex / 左下顶点
+//     P[5] = vec2(-0.189392617382025, -0.167766507309416);  // Lower vertex / 下顶点
+//     P[6] = vec2(0.21988773883909, -0.167364950094866);    // Lower right vertex / 右下顶点
+// }
 
 // ============================================================================
 // FUNDAMENTAL DOMAIN DETECTION - 基本域检测
@@ -141,6 +163,17 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     float shade = 1. - smoothstep(0.95, 1.0, length(uv));
 
     init();
+
+    coordinates();
+
+    vec2 P0 = P[0];
+    vec2 P1 = P[1];
+    vec2 Q0 = vec2(0.300742618746379, 0);
+    vec2 Q1 = vec2(0.187509955772656, 0.235130047455799);
+
+    for(int i = 0; i < 7; i++) {
+        P[i] = hypTranslate(P0, P1, Q0, Q1, P[i]);
+    }
 
     // Code for interactive vertex placement and testing
     // 用于交互式顶点放置和测试的代码

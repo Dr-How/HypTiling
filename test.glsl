@@ -53,7 +53,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         shade *= step(0.05, length(uv-P[i]));
     }
 
-    shade += (1. -step(0.05, length(uv-P[0])))*0.5;
+    // shade += (1. -step(0.05, length(uv-P[0])))*0.5;
 
     float fundDomain = 1.0;
     for (int i = 0; i < 7; i++){

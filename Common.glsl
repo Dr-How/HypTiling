@@ -323,8 +323,9 @@ vec3 fold(vec2 uv, vec2 a, vec2 b, vec2 c, vec2 d) {
 void collectiveRotate(int i) {
     // First, translate all points so that P[i] is at the origin
     // 首先，将所有点平移，使P[i]位于原点
+    vec2 Pi = P[i];
     for (int j = 0; j < 7; j++) {
-        P[j] = hypTranslate(P[i], P[j]);
+        P[j] = hypTranslate(Pi, P[j]);
     }
     
     // Compute the angle to rotate so that the previous point aligns with the desired angle
@@ -336,7 +337,7 @@ void collectiveRotate(int i) {
     // Rotate all points around the origin by theta
     // 围绕原点将所有点旋转theta角度
     for (int j = 0; j < 7; j++) {
-        P[j] = hypRotate(P[i], theta, P[j]);
+        if(i != j) P[j] = hypRotate(theta, P[j]);
     }
 }
 
