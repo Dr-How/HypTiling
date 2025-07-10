@@ -342,6 +342,14 @@ void collectiveRotate(int i) {
 
 // Set up the coordinates of the points based on edge lengths and angles
 // 根据边长和角度设置各点的坐标
+// Usage:
+// First write an init() function to set the angles and edges
+// and also set the initial positions of the points to 0.
+// Then call coordinates() to update the positions of the points.
+// 使用方法：
+// 首先编写一个init()函数来设置角度和边长，
+// 并将各点的初始位置设置为0。
+// 然后调用coordinates()来更新各点的位置。
 void coordinates() {
     // For each edge, rotate and set the next point along the x-axis
     // 对每条边，旋转并将下一个点放在x轴上
