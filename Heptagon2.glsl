@@ -11,57 +11,59 @@ Tiling 3 : https://www.shadertoy.com/view/33y3R1
 
 #include "Common.glsl"
 
-vec2 P0 = vec2(0.300742618746379, 0);
-vec2 P1 = vec2(0.34525955300045, 0.245549869718597);
-vec2 P2 = vec2(0.202401568809967, 0.426638584831781);
-vec2 P3 = vec2(-0.024016800671514, 0.448665753566109);
-vec2 P4 = vec2(-0.14760106304294, 0.331675461412054);
-vec2 P5 = vec2(-0.241285628861742, -0.010343249532733);
-vec2 P6 = vec2(0.127483229064559, -0.084298662030841);
+void init(){
+    P[0] = vec2(0.300742618746379, 0);
+    P[1] = vec2(0.34525955300045, 0.245549869718597);
+    P[2] = vec2(0.202401568809967, 0.426638584831781);
+    P[3] = vec2(-0.024016800671514, 0.448665753566109);
+    P[4] = vec2(-0.14760106304294, 0.331675461412054);
+    P[5] = vec2(-0.241285628861742, -0.010343249532733);
+    P[6] = vec2(0.127483229064559, -0.084298662030841);
+}
 
 float inside1(vec2 st){
-    float side0=hypGeodesic(st,P0,P1);
-    float side1=hypGeodesic(st,P1,P2);
-    float side2=hypGeodesic(st,P2,P3);
-    float side3=hypGeodesic(st,P3,P4);
-    float side4=hypGeodesic(st,P4,P5);
-    float side5=hypGeodesic(st,P5,P6);
-    float side6=hypGeodesic(st,P6,P0);
+    float side0=hypGeodesic(st,P[0],P[1]);
+    float side1=hypGeodesic(st,P[1],P[2]);
+    float side2=hypGeodesic(st,P[2],P[3]);
+    float side3=hypGeodesic(st,P[3],P[4]);
+    float side4=hypGeodesic(st,P[4],P[5]);
+    float side5=hypGeodesic(st,P[5],P[6]);
+    float side6=hypGeodesic(st,P[6],P[0]);
     float c=side0*side1*side2*side3*side4*side5*side6;
     return c;
 }
 
-vec2 a(vec2 z){return hypRotate3(P1, z);}
+vec2 a(vec2 z){return hypRotate3(P[1], z);}
 vec2 ina(vec2 z){return a(a(z));}
 vec2 b(vec2 z){
-    vec2 Q2 = hypReflect(P0, P6, P2);
+    vec2 Q2 = hypReflect(P[0], P[6], P[2]);
     return hypRotate3(Q2,z);
 }
 vec2 inb(vec2 z){return b(b(z));}
 vec2 d(vec2 z){
-    vec2 Q5 = hypReflect(P0, P6, P5);
-    vec2 Q2 = hypReflect(P0, P6, P2);
-    Q2 = hypRotate2(hypMid(Q5, P6), Q2);
+    vec2 Q5 = hypReflect(P[0], P[6], P[5]);
+    vec2 Q2 = hypReflect(P[0], P[6], P[2]);
+    Q2 = hypRotate2(hypMid(Q5, P[6]), Q2);
     return hypRotate3(Q2, z);
 }
 vec2 ind(vec2 z){ return d(d(z)); }
 vec2 e(vec2 z){
-    vec2 Q1 = hypRotate2(hypMid(P4, P5), P1);
+    vec2 Q1 = hypRotate2(hypMid(P[4], P[5]), P[1]);
     return hypRotate3(Q1, z);
 }
 vec2 ine(vec2 z){ return e(e(z));}
 
 float inside2(vec2 z){
-    return inside1(hypReflect(P0, P6, z));
+    return inside1(hypReflect(P[0], P[6], z));
 }
 float inside3(vec2 z){//5
-    vec2 Q5 = hypReflect(P0, P6, P5);
-    vec2 w = hypRotate2(hypMid(Q5, P6), z);
-    w = hypReflect(P0, P6, w);
+    vec2 Q5 = hypReflect(P[0], P[6], P[5]);
+    vec2 w = hypRotate2(hypMid(Q5, P[6]), z);
+    w = hypReflect(P[0], P[6], w);
     return inside1(w);
 }
 float inside4(vec2 z){//4
-    vec2 w = hypRotate2(hypMid(P4, P5), z);
+    vec2 w = hypRotate2(hypMid(P[4], P[5]), z);
     return inside1(w);
 }
 
@@ -93,34 +95,36 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     uv *= 2.*vec2(iResolution.x/iResolution.y, 1.);
     fragColor=vec4(0.);
     
-   float shade = 1. - smoothstep(0.99, 1.0, length(uv));
+    float shade = 1. - smoothstep(0.99, 1.0, length(uv));
     
-    
-    vec2 o0=vec2(-0.09, -0.69);
-    vec2 o1 = T1(o0);
-    vec2 o2 = T3inv(o1);
-    vec2 o3 = T4(o2);
-    vec2 o4 = T1inv(o3);
-    vec2 o5 = T2(o4);
-    vec2 o6 = T3(o5);
-    vec2 o7 = T2inv(o6);
+    init();
+
+    vec2[8] o;
+    o[0]=vec2(-0.09, -0.69);
+    o[1] = T1(o[0]);
+    o[2] = T3inv(o[1]);
+    o[3] = T4(o[2]);
+    o[4] = T1inv(o[3]);
+    o[5] = T2(o[4]);
+    o[6] = T3(o[5]);
+    o[7] = T2inv(o[6]);
     
     shade *=step(1.0, (1.-
-    hypGeodesic(uv, o2, o0) *
-    hypGeodesic(uv, o5, o2) *
-    hypGeodesic(uv, o6, o5) *
-    hypGeodesic(uv, o1, o6) *
-    hypGeodesic(uv, o3, o1) *
-    hypGeodesic(uv, o7, o3) *
-    hypGeodesic(uv, o4, o7) *
-    hypGeodesic(uv, o0, o4)
+    hypGeodesic(uv, o[2], o[0]) *
+    hypGeodesic(uv, o[5], o[2]) *
+    hypGeodesic(uv, o[6], o[5]) *
+    hypGeodesic(uv, o[1], o[6]) *
+    hypGeodesic(uv, o[3], o[1]) *
+    hypGeodesic(uv, o[7], o[3]) *
+    hypGeodesic(uv, o[4], o[7]) *
+    hypGeodesic(uv, o[0], o[4])
     ))*.3+.7;
 
     for(int i = 0; i < 8; i++) {
-        uv = fold(uv, o0, o4, o1, o3).xy;
-        uv = fold(uv, o0, o2, o7, o3).xy;
-        uv = fold(uv, o2, o5, o1, o6).xy;
-        uv = fold(uv, o5, o6, o4, o7).xy;
+        uv = fold(uv, o[0], o[4], o[1], o[3]).xy;
+        uv = fold(uv, o[0], o[2], o[7], o[3]).xy;
+        uv = fold(uv, o[2], o[5], o[1], o[6]).xy;
+        uv = fold(uv, o[5], o[6], o[4], o[7]).xy;
     }
     
         // Color the inside of the fundamental domain

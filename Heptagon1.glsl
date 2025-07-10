@@ -23,13 +23,15 @@ Tiling 3 : https://www.shadertoy.com/view/33y3R1
 // 这些是双曲七边形的顶点
 // The coordinates are computed to create a regular heptagon in hyperbolic geometry
 // 坐标经过计算以在双曲几何中创建正七边形
-vec2 P0 = vec2(0.300742618746379, 0);                    // Rightmost vertex / 最右顶点
-vec2 P1 = vec2(0.187509955772656, 0.235130047455799);    // Upper right vertex / 右上顶点
-vec2 P2 = vec2(-0.066921528403913, 0.293202373398501);   // Upper vertex / 上顶点
-vec2 P3 = vec2(-0.407880227210424, 0.12629188065801);    // Upper left vertex / 左上顶点
-vec2 P4 = vec2(-0.394332095466785, -0.012650020343597);  // Lower left vertex / 左下顶点
-vec2 P5 = vec2(-0.189392617382025, -0.167766507309416);  // Lower vertex / 下顶点
-vec2 P6 = vec2(0.21988773883909, -0.167364950094866);    // Lower right vertex / 右下顶点
+void init(){
+    P[0] = vec2(0.300742618746379, 0);                    // Rightmost vertex / 最右顶点
+    P[1] = vec2(0.187509955772656, 0.235130047455799);    // Upper right vertex / 右上顶点
+    P[2] = vec2(-0.066921528403913, 0.293202373398501);   // Upper vertex / 上顶点
+    P[3] = vec2(-0.407880227210424, 0.12629188065801);    // Upper left vertex / 左上顶点
+    P[4] = vec2(-0.394332095466785, -0.012650020343597);  // Lower left vertex / 左下顶点
+    P[5] = vec2(-0.189392617382025, -0.167766507309416);  // Lower vertex / 下顶点
+    P[6] = vec2(0.21988773883909, -0.167364950094866);    // Lower right vertex / 右下顶点
+}
 
 // ============================================================================
 // FUNDAMENTAL DOMAIN DETECTION - 基本域检测
@@ -41,13 +43,13 @@ vec2 P6 = vec2(0.21988773883909, -0.167364950094866);    // Lower right vertex /
 float insideFD(vec2 st){
     // Check if point is outside each of the 7 sides of the heptagon
     // 检查点是否在七边形7条边的外部
-    float side0=hypGeodesic(st,P0,P1);  // Side from P0 to P1 / 从P0到P1的边
-    float side1=hypGeodesic(st,P1,P2);  // Side from P1 to P2 / 从P1到P2的边
-    float side2=hypGeodesic(st,P2,P3);  // Side from P2 to P3 / 从P2到P3的边
-    float side3=hypGeodesic(st,P3,P4);  // Side from P3 to P4 / 从P3到P4的边
-    float side4=hypGeodesic(st,P4,P5);  // Side from P4 to P5 / 从P4到P5的边
-    float side5=hypGeodesic(st,P5,P6);  // Side from P5 to P6 / 从P5到P6的边
-    float side6=hypGeodesic(st,P6,P0);  // Side from P6 to P0 / 从P6到P0的边
+    float side0=hypGeodesic(st,P[0],P[1]);  // Side from P0 to P1 / 从P0到P1的边
+    float side1=hypGeodesic(st,P[1],P[2]);  // Side from P1 to P2 / 从P1到P2的边
+    float side2=hypGeodesic(st,P[2],P[3]);  // Side from P2 to P3 / 从P2到P3的边
+    float side3=hypGeodesic(st,P[3],P[4]);  // Side from P3 to P4 / 从P3到P4的边
+    float side4=hypGeodesic(st,P[4],P[5]);  // Side from P4 to P5 / 从P4到P5的边
+    float side5=hypGeodesic(st,P[5],P[6]);  // Side from P5 to P6 / 从P5到P6的边
+    float side6=hypGeodesic(st,P[6],P[0]);  // Side from P6 to P0 / 从P6到P0的边
     
     // Multiply all side checks - if any side returns 1 (outside), result is 1
     // 将所有边的检查结果相乘 - 如果任何边返回0（外部），结果为0
@@ -63,31 +65,31 @@ float insideFD(vec2 st){
 // Each generator is a hyperbolic isometry that preserves the tiling pattern
 // 每个生成元都是保持平铺模式的双曲等距变换
 
-// 120-degree rotation around vertex P1 (creates triangular symmetry)
-// 围绕顶点P1旋转120度（创建三角形对称性）
-vec2 a(vec2 z) {return hypRotate3(P1,z);}
+// 120-degree rotation around vertex P1
+// 围绕顶点P1旋转120度
+vec2 a(vec2 z) {return hypRotate3(P[1],z);}
 // Inverse of a (240-degree rotation, equivalent to a²)
 // a的逆（240度旋转，等价于a²）
 vec2 ina(vec2 z) {return a(a(z));}
 
 // 180-degree rotation around the midpoint of P6 and P0 (reflection symmetry)
 // 围绕P6和P0的中点旋转180度（反射对称性）
-vec2 b(vec2 z) {return hypRotate2(hypMid(P6,P0),z);}
+vec2 b(vec2 z) {return hypRotate2(hypMid(P[6],P[0]),z);}
 
 // Hyperbolic translation that maps P6 to P5 and P2 to P3
 // 将P6映射到P5，P2映射到P3的双曲平移
-vec2 c(vec2 z){return hypTranslate(P6, P5, P2, P3, z);}
+vec2 c(vec2 z){return hypTranslate(P[6], P[5], P[2], P[3], z);}
 // Inverse of c
 // c的逆
-vec2 inc(vec2 z){return hypTranslate(P2, P3, P6, P5, z);}
+vec2 inc(vec2 z){return hypTranslate(P[2], P[3], P[6], P[5], z);}
 
 // 180-degree rotation around the midpoint of P4 and P5
 // 围绕P4和P5的中点旋转180度
-vec2 d(vec2 z) {return hypRotate2(hypMid(P4,P5),z);}
+vec2 d(vec2 z) {return hypRotate2(hypMid(P[4],P[5]),z);}
 
 // 180-degree rotation around the midpoint of P3 and P4
 // 围绕P3和P4的中点旋转180度
-vec2 e(vec2 z) {return hypRotate2(hypMid(P3,P4),z);}
+vec2 e(vec2 z) {return hypRotate2(hypMid(P[3],P[4]),z);}
 
 // ============================================================================
 // TRANSLATIONAL SYMMETRIES - 平移对称性
@@ -138,6 +140,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     // 圆盘外的点变暗以创建边界效果
     float shade = 1. - smoothstep(0.99, 1.0, length(uv));
 
+    init();
+
     // Code for interactive vertex placement and testing
     // 用于交互式顶点放置和测试的代码
     // Uncomment to enable mouse-based vertex manipulation
@@ -184,15 +188,16 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     // 这个八边形代表平铺中基本域
     // The order of the translations are obtained from the relation given by GAP
     // 平移的顺序是从GAP中得到的
-    vec2 o0 = vec2(-0.625, 0.545);  // Starting vertex / 起始顶点
+    vec2[8] o;
+    o[0] = vec2(-0.625, 0.545);  // Starting vertex / 起始顶点
     // o0 = inT1(P0);  // Alternative: derive from fundamental heptagon / 替代方案：从基本七边形导出
-    vec2 o1 = T1(o0);  // Apply translation T1 / 应用平移T1
-    vec2 o2 = T2(o1);  // Apply translation T2 / 应用平移T2
-    vec2 o3 = inT1(o2); // Apply inverse of T1 / 应用T1的逆
-    vec2 o4 = T4(o3);   // Apply translation T4 / 应用平移T4
-    vec2 o5 = T3(o4);   // Apply translation T3 / 应用平移T3
-    vec2 o6 = inT4(o5); // Apply inverse of T4 / 应用T4的逆
-    vec2 o7 = inT2(o6); // Apply inverse of T2 / 应用T2的逆
+    o[1] = T1(o[0]);  // Apply translation T1 / 应用平移T1
+    o[2] = T2(o[1]);  // Apply translation T2 / 应用平移T2
+    o[3] = inT1(o[2]); // Apply inverse of T1 / 应用T1的逆
+    o[4] = T4(o[3]);   // Apply translation T4 / 应用平移T4
+    o[5] = T3(o[4]);   // Apply translation T3 / 应用平移T3
+    o[6] = inT4(o[5]); // Apply inverse of T4 / 应用T4的逆
+    o[7] = inT2(o[6]); // Apply inverse of T2 / 应用T2的逆
     // vec2 o8 = inT3(o7); // Additional vertex if needed / 如果需要额外的顶点
 
     // Shade the interior of the octagon with a darker color
@@ -200,14 +205,14 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     // This creates a visual boundary for the fundamental domain
     // 这为基本域创建视觉边界
     shade *= step(1.0, (1.-
-        hypGeodesic(uv, o4, o0) *  // Side from o4 to o0 / 从o4到o0的边
-        hypGeodesic(uv, o5, o4) *  // Side from o5 to o4 / 从o5到o4的边
-        hypGeodesic(uv, o7, o5) *  // Side from o7 to o5 / 从o7到o5的边
-        hypGeodesic(uv, o1, o7) *  // Side from o1 to o7 / 从o1到o7的边
-        hypGeodesic(uv, o2, o1) *  // Side from o2 to o1 / 从o2到o1的边
-        hypGeodesic(uv, o6, o2) *  // Side from o6 to o2 / 从o6到o2的边
-        hypGeodesic(uv, o3, o6) *  // Side from o3 to o6 / 从o3到o6的边
-        hypGeodesic(uv, o0, o3) *  // Side from o0 to o3 / 从o0到o3的边
+        hypGeodesic(uv, o[4], o[0]) *  // Side from o4 to o0 / 从o4到o0的边
+        hypGeodesic(uv, o[5], o[4]) *  // Side from o5 to o4 / 从o5到o4的边
+        hypGeodesic(uv, o[7], o[5]) *  // Side from o7 to o5 / 从o7到o5的边
+        hypGeodesic(uv, o[1], o[7]) *  // Side from o1 to o7 / 从o1到o7的边
+        hypGeodesic(uv, o[2], o[1]) *  // Side from o2 to o1 / 从o2到o1的边
+        hypGeodesic(uv, o[6], o[2]) *  // Side from o6 to o2 / 从o6到o2的边
+        hypGeodesic(uv, o[3], o[6]) *  // Side from o3 to o6 / 从o3到o6的边
+        hypGeodesic(uv, o[0], o[3]) *  // Side from o0 to o3 / 从o0到o3的边
     1.))*.3+.7;
 
     // ============================================================================
@@ -234,10 +239,10 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     for(int i = 0; i < 6; i++) {
         // Fold using different pairs of geodesics to cover all cases
         // 使用不同的测地线对进行折叠以覆盖所有情况
-        uv = fold(uv, o3, o0, o2, o1).xy;  // Fold across geodesic o3-o0 vs o2-o1 / 跨测地线o3-o0 vs o2-o1折叠
-        uv = fold(uv, o0, o4, o7, o5).xy;  // Fold across geodesic o0-o4 vs o7-o5 / 跨测地线o0-o4 vs o7-o5折叠
-        uv = fold(uv, o7, o1, o6, o2).xy;  // Fold across geodesic o7-o1 vs o6-o2 / 跨测地线o7-o1 vs o6-o2折叠
-        uv = fold(uv, o4, o5, o3, o6).xy;  // Fold across geodesic o4-o5 vs o3-o6 / 跨测地线o4-o5 vs o3-o6折叠
+        uv = fold(uv, o[3], o[0], o[2], o[1]).xy;  // Fold across geodesic o3-o0 vs o2-o1 / 跨测地线o3-o0 vs o2-o1折叠
+        uv = fold(uv, o[0], o[4], o[7], o[5]).xy;  // Fold across geodesic o0-o4 vs o7-o5 / 跨测地线o0-o4 vs o7-o5折叠
+        uv = fold(uv, o[7], o[1], o[6], o[2]).xy;  // Fold across geodesic o7-o1 vs o6-o2 / 跨测地线o7-o1 vs o6-o2折叠
+        uv = fold(uv, o[4], o[5], o[3], o[6]).xy;  // Fold across geodesic o4-o5 vs o3-o6 / 跨测地线o4-o5 vs o3-o6折叠
     }
 
     // Alternative visualization: show distance to origin after folding
