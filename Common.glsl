@@ -320,8 +320,10 @@ vec3 fold(vec2 uv, vec2 a, vec2 b, vec2 c, vec2 d) {
 
 // Rotate all points so that P[i] is at the origin, then rotate all points by a specific angle so that P[i-1] aligns with the desired direction.
 // If i==0, do nothing. This function is used in the construction of the heptagon.
+// Cautious: this function is only to be called in the coordinates() function that follows.
 // 先将所有点平移，使P[i]位于原点，然后将所有点旋转特定角度，使P[i-1]对齐到目标方向。
 // 如果i==0，则不做任何操作。本函数用于七边形的构造。
+// 注意：本函数只能在coordinates()函数中调用。
 void collectiveRotate(int i) {
     if (i == 0) return;
     // First, translate all points so that P[i] is at the origin
