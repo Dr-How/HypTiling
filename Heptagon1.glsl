@@ -1,10 +1,8 @@
 /*
 Based on an ongoing research project of the group of Wang Erxiao from Zhejiang Normal University.
-Part of the code is contributed by qingshu and Wu.
 Tiling data computed using exterior program.
 
 基于浙江师范大学王二小课题组正在进行的科研项目。
-部分代码由qingshu和Wu贡献。
 平铺数据使用外部程序计算。
 
 List of heptagonal monohedral tilings:
