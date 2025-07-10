@@ -138,7 +138,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     // 为Poincare圆盘（单位圆）创建平滑边界
     // Points outside the disk are darkened to create the boundary effect
     // 圆盘外的点变暗以创建边界效果
-    float shade = 1. - smoothstep(0.99, 1.0, length(uv));
+    float shade = 1. - smoothstep(0.95, 1.0, length(uv));
 
     init();
 

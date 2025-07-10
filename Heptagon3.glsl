@@ -64,7 +64,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     fragColor=vec4(0.0, 0.0, 0.0, 1.);
 
     // Poincare disk
-    float shade = 1. - smoothstep(0.99, 1.0, length(uv));
+    float shade = 1. - smoothstep(0.95, 1.0, length(uv));
 
     init();
 

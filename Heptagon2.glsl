@@ -95,7 +95,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     uv *= 2.*vec2(iResolution.x/iResolution.y, 1.);
     fragColor=vec4(0.);
     
-    float shade = 1. - smoothstep(0.99, 1.0, length(uv));
+    float shade = 1. - smoothstep(0.95, 1.0, length(uv));
     
     init();
 
@@ -128,18 +128,18 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     }
     
         // Color the inside of the fundamental domain
-    vec3 col1 = vec3(0.0, 1.0, 0.0);
-    vec3 col2 = vec3(0.0, 0.0, 1.0);
-    vec3 col3 = vec3(1.0, 0.0, 0.0);
-    vec3 col4 = vec3(1.0, 1.0, 0.0);
-    vec3 col5 = vec3(0.0, 1.0, 1.0);
-    vec3 col6 = vec3(1.0, 0.0, 1.0);
-    vec3 col7 = vec3(0.2, 0.7, 0.8);
-    vec3 col8 = vec3(0.6, 0.6, 0.6);
-    vec3 col9 = vec3(1.0, 0.7, 0.8);
-    vec3 colA = vec3(1.0, 0.4, 0.6);
-    vec3 colB = vec3(0.5, 0.8, 0.8);
-    vec3 colC = vec3(0.7, 0.8, 1.0);
+    vec3 col1 = vec3(0.90, 0.10, 0.15);   // vivid red
+    vec3 col2 = vec3(0.00, 0.60, 0.30);   // emerald green
+    vec3 col3 = vec3(0.10, 0.35, 0.85);   // strong blue
+    vec3 col4 = vec3(1.00, 0.80, 0.10);   // bright yellow
+    vec3 col5 = vec3(0.60, 0.20, 0.80);   // purple
+    vec3 col6 = vec3(0.00, 0.75, 0.75);   // turquoise
+    vec3 col7 = vec3(1.00, 0.50, 0.00);   // orange
+    vec3 col8 = vec3(0.40, 0.80, 0.10);   // lime green
+    vec3 col9 = vec3(0.00, 0.50, 1.00);   // cyan blue
+    vec3 colA = vec3(1.00, 0.20, 0.60);   // magenta
+    vec3 colB = vec3(0.60, 0.40, 0.10);   // ochre
+    vec3 colC = vec3(0.20, 0.80, 0.60);   // mint
     
     fragColor += vec4(col1, 1.) * inside1(uv);
     fragColor += vec4(col2, 1.) * inside2(uv);
