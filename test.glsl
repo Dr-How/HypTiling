@@ -44,6 +44,10 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     coordinates();
 
     float shade = 1. - smoothstep(0.99, 1.0, length(uv));
+    
+    if (abs(hypDist(P[6], P[0]) - edges[6]) > 0.00001){
+        shade = 0.0;
+    }
 
     for (int i = 0; i < 7; i++){
         shade *= step(0.05, length(uv-P[i]));
