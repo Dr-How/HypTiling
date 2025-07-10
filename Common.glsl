@@ -318,15 +318,16 @@ vec3 fold(vec2 uv, vec2 a, vec2 b, vec2 c, vec2 d) {
 // HEPTAGON CONSTRUCTION - 七边形构造
 // ============================================================================
 
-// Rotate all points around P[i] and then rotate by a specific angle
-// 围绕P[i]旋转所有点，然后再旋转一个特定角度
+// Rotate all points so that P[i] is at the origin, then rotate all points by a specific angle so that P[i-1] aligns with the desired direction.
+// If i==0, do nothing. This function is used in the construction of the heptagon.
+// 先将所有点平移，使P[i]位于原点，然后将所有点旋转特定角度，使P[i-1]对齐到目标方向。
+// 如果i==0，则不做任何操作。本函数用于七边形的构造。
 void collectiveRotate(int i) {
+    if (i == 0) return;
     // First, translate all points so that P[i] is at the origin
     // 首先，将所有点平移，使P[i]位于原点
-    if(i==0) return;
-
     vec2 Q = P[i];
-    for (int j = 0; j < 7; j++) {
+    for (int j = 0; j <= i; j++) {
         P[j] = hypTranslate(Q, P[j]);
     }
     
@@ -338,7 +339,7 @@ void collectiveRotate(int i) {
     
     // Rotate all points around the origin by theta
     // 围绕原点将所有点旋转theta角度
-    for (int j = 0; j < 7; j++) {
+    for (int j = 0; j <= i; j++) {
         P[j] = hypRotate(theta, P[j]);
     }
 }
@@ -347,24 +348,27 @@ bool coordComputed;
 // Set up the coordinates of the points based on edge lengths and angles
 // 根据边长和角度设置各点的坐标
 // Usage:
-// First write an init() function to set the angles and edges
-// and also set the initial positions of the points to 0.
+// First write an init() function
+// set the angles and edges and also set the initial positions of the points to 0.
 // Then call coordinates() to update the positions of the points.
 // 使用方法：
-// 首先编写一个init()函数来设置角度和边长，
-// 并将各点的初始位置设置为0。
+// 首先编写一个init()函数
+// 设置角度和边长，并将各点的初始位置设置为0。
 // 然后调用coordinates()来更新各点的位置。
 void coordinates() {
     if (coordComputed) return;
-    // For each edge, rotate and set the next point along the x-axis
-    // 对每条边，旋转并将下一个点放在x轴上
-    for (int i = 0; i < 6; i++) {
-        collectiveRotate(i);
-        float x = edges[i] / 2.0;
-        
+    // For each edge, set the next point along the x-axis and rotate
+    // 对每条边，将下一个点放在x轴上并旋转
+    P[0] = vec2(0.0, 0.0);
+
+    for (int i = 1; i < 7; i++) {
         // Place the next point at the correct distance along the x-axis
         // 将下一个点放在x轴上正确的距离处
-        P[i + 1] = vec2((exp(x) - exp(-x)) / (exp(x) + exp(-x)), 0.0);
+        float x = edges[i-1] / 2.0;
+        P[i] = vec2((exp(x) - exp(-x)) / (exp(x) + exp(-x)), 0.0);
+        // Translate the next point to the origin and rotate the previous point to the given angle
+        // 将下一个点平移到原点，并将前一个点旋转到给定角度
+        collectiveRotate(i);
     }
     
     // Compute the centroid of all points
