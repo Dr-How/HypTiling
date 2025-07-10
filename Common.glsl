@@ -318,28 +318,23 @@ vec3 fold(vec2 uv, vec2 a, vec2 b, vec2 c, vec2 d) {
 // HEPTAGON CONSTRUCTION - 七边形构造
 // ============================================================================
 
-// Rotate all points so that P[i] is at the origin, then rotate all points by a specific angle so that P[i-1] aligns with the desired direction.
-// If i==0, do nothing. This function is used in the construction of the heptagon.
-// Cautious: this function is only to be called in the coordinates() function that follows.
-// 先将所有点平移，使P[i]位于原点，然后将所有点旋转特定角度，使P[i-1]对齐到目标方向。
-// 如果i==0，则不做任何操作。本函数用于七边形的构造。
-// 注意：本函数只能在coordinates()函数中调用。
+// Helper function: For i > 0, translate all points so P[i] is at the origin, then rotate all points so P[i-1] aligns with the desired angle.
+// Only used internally by coordinates().
+// 辅助函数：当i>0时，将所有点平移使P[i]在原点，再旋转所有点使P[i-1]对齐到目标角度。
+// 仅供coordinates()内部调用。
 void collectiveRotate(int i) {
     if (i == 0) return;
-    // First, translate all points so that P[i] is at the origin
-    // 首先，将所有点平移，使P[i]位于原点
+    // Move all points so P[i] is at the origin
+    // 将所有点平移，使P[i]位于原点
     vec2 Q = P[i];
     for (int j = 0; j <= i; j++) {
         P[j] = hypTranslate(Q, P[j]);
     }
-    
-    // Compute the angle to rotate so that the previous point aligns with the desired angle
-    // 计算旋转角度，使前一个点与目标角度对齐
+    // Compute rotation angle so P[i-1] aligns with angles[i]
+    // 计算旋转角度，使P[i-1]对齐到angles[i]
     vec2 w = normalize(P[i - 1]);
-    float theta = atan(w.y, w.x);
-    theta = angles[i] * PI / 180.0 - theta;
-    
-    // Rotate all points around the origin by theta
+    float theta = angles[i] * PI / 180.0 - atan(w.y, w.x);
+    // Rotate all points by theta around the origin
     // 围绕原点将所有点旋转theta角度
     for (int j = 0; j <= i; j++) {
         P[j] = hypRotate(theta, P[j]);
@@ -347,41 +342,34 @@ void collectiveRotate(int i) {
 }
 
 bool coordComputed;
-// Set up the coordinates of the points based on edge lengths and angles
-// 根据边长和角度设置各点的坐标
-// Usage:
-// First write an init() function
-// set the angles and edges and also set the initial positions of the points to 0.
-// Then call coordinates() to update the positions of the points.
-// 使用方法：
-// 首先编写一个init()函数
-// 设置角度和边长，并将各点的初始位置设置为0。
-// 然后调用coordinates()来更新各点的位置。
+
+// Compute the coordinates of the heptagon vertices from edge lengths and angles.
+// Call after initializing angles, edges, and setting P to zero.
+// For each vertex, place it at the correct hyperbolic distance on the x-axis, then rotate/align using collectiveRotate.
+// Finally, recenter the heptagon at the origin.
+// 根据边长和角度计算七边形顶点坐标。
+// 需先初始化angles、edges并将P设为0。
+// 依次将每个顶点放在x轴正确的双曲距离处，再用collectiveRotate旋转对齐。
+// 最后将七边形中心移到原点。
 void coordinates() {
     if (coordComputed) return;
-    // For each edge, set the next point along the x-axis and rotate
-    // 对每条边，将下一个点放在x轴上并旋转
+    // Place the first vertex at the origin
+    // 将第一个顶点放在原点
     P[0] = vec2(0.0, 0.0);
-
+    // For each edge, set the next vertex along the x-axis and rotate/align
+    // 对每条边，将下一个顶点放在x轴上并旋转对齐
     for (int i = 1; i < 7; i++) {
-        // Place the next point at the correct distance along the x-axis
-        // 将下一个点放在x轴上正确的距离处
         float x = edges[i-1] / 2.0;
         P[i] = vec2((exp(x) - exp(-x)) / (exp(x) + exp(-x)), 0.0);
-        // Translate the next point to the origin and rotate the previous point to the given angle
-        // 将下一个点平移到原点，并将前一个点旋转到给定角度
         collectiveRotate(i);
     }
-    
-    // Compute the centroid of all points
-    // 计算所有点的中心点
+    // Compute the centroid of all vertices
+    // 计算所有顶点的中心点
     vec2 center = (P[0] + P[1] + P[2] + P[3] + P[4] + P[5] + P[6]) / 7.0;
-    
-    // Translate all points so that the centroid is at the origin
-    // 平移所有点，使中心点位于原点
+    // Translate all vertices so the centroid is at the origin
+    // 平移所有顶点，使中心点位于原点
     for (int i = 0; i < 7; i++) {
         P[i] = hypTranslate(center, P[i]);
     }
-
     coordComputed = true;
 }
