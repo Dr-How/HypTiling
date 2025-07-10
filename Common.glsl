@@ -323,9 +323,11 @@ vec3 fold(vec2 uv, vec2 a, vec2 b, vec2 c, vec2 d) {
 void collectiveRotate(int i) {
     // First, translate all points so that P[i] is at the origin
     // 首先，将所有点平移，使P[i]位于原点
-    vec2 Pi = P[i];
+    if(i==0) return;
+
+    vec2 Q = P[i];
     for (int j = 0; j < 7; j++) {
-        P[j] = hypTranslate(Pi, P[j]);
+        P[j] = hypTranslate(Q, P[j]);
     }
     
     // Compute the angle to rotate so that the previous point aligns with the desired angle
@@ -337,10 +339,11 @@ void collectiveRotate(int i) {
     // Rotate all points around the origin by theta
     // 围绕原点将所有点旋转theta角度
     for (int j = 0; j < 7; j++) {
-        if(i != j) P[j] = hypRotate(theta, P[j]);
+        P[j] = hypRotate(theta, P[j]);
     }
 }
 
+bool coordComputed;
 // Set up the coordinates of the points based on edge lengths and angles
 // 根据边长和角度设置各点的坐标
 // Usage:
@@ -352,6 +355,7 @@ void collectiveRotate(int i) {
 // 并将各点的初始位置设置为0。
 // 然后调用coordinates()来更新各点的位置。
 void coordinates() {
+    if (coordComputed) return;
     // For each edge, rotate and set the next point along the x-axis
     // 对每条边，旋转并将下一个点放在x轴上
     for (int i = 0; i < 6; i++) {
@@ -372,4 +376,6 @@ void coordinates() {
     for (int i = 0; i < 7; i++) {
         P[i] = hypTranslate(center, P[i]);
     }
+
+    coordComputed = true;
 }

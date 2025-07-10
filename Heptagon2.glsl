@@ -31,16 +31,18 @@ void init() {
     for(int i = 0; i < 7; i++) {
         P[i] = vec2(0.0);
     }
+    coordComputed = false;
+
+    coordinates();
+    vec2 P0 = P[0];
+    vec2 P1 = P[1];
+    vec2 Q0 = vec2(0.300742618746379, 0.0);
+    vec2 Q1 = vec2(0.34525955300045, 0.245549869718597);
+
+    for(int i = 0; i < 7; i++) {
+        P[i] = hypTranslate(P0, P1, Q0, Q1, P[i]);
+    }
 }
-// void init(){
-//     P[0] = vec2(0.300742618746379, 0);
-//     P[1] = vec2(0.34525955300045, 0.245549869718597);
-//     P[2] = vec2(0.202401568809967, 0.426638584831781);
-//     P[3] = vec2(-0.024016800671514, 0.448665753566109);
-//     P[4] = vec2(-0.14760106304294, 0.331675461412054);
-//     P[5] = vec2(-0.241285628861742, -0.010343249532733);
-//     P[6] = vec2(0.127483229064559, -0.084298662030841);
-// }
 
 float inside1(vec2 st){
     float side0=hypGeodesic(st,P[0],P[1]);
@@ -119,15 +121,6 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     float shade = 1. - smoothstep(0.95, 1.0, length(uv));
     
     init();
-    coordinates();
-
-    vec2 P0 = P[0];
-    vec2 P1 = P[1];
-    vec2 Q0 = vec2(0.300742618746379, 0.0);
-    vec2 Q1 = vec2(0.34525955300045, 0.245549869718597);
-    for(int i = 0; i < 7; i++) {
-        P[i] = hypTranslate(P0, P1, Q0, Q1, P[i]);
-    }
 
     vec2[8] o;
     o[0]=vec2(-0.09, -0.69);

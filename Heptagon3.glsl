@@ -11,14 +11,37 @@ Tiling 3 : https://www.shadertoy.com/view/33y3R1
 
 #include "Common.glsl"
 
-void init(){
-    P[0]=vec2(0.2,0.0);
-    P[1]=vec2(0.0,0.3);
-    P[2]=vec2(-0.32404831193738, 0.333538268370604);
-    P[3]=vec2(-0.428524826583806, 0.198469800984519);
-    P[4]=vec2(-0.283164188899024, -0.113246058936213);
-    P[5]=vec2(-0.156207648980834, -0.265530024731532);
-    P[6]=vec2(-0.071308857919178, -0.2732892729216);
+void init() {
+    angles[0] = 95.;
+    angles[1] = 120.;
+    angles[2] = 110.;
+    angles[3] = 105.;
+    angles[4] = 155.;
+    angles[5] = 130.;
+    angles[6] = 125.;
+
+    edges[0] = 0.753560127018144;
+    edges[1] = edges[0];
+    edges[2] = 0.43422736908768;
+    edges[3] = 0.798077355147606;
+    edges[4] = edges[2];
+    edges[5] = 0.186557981786547;
+    edges[6] = edges[3];
+
+    for(int i = 0; i < 7; i++) {
+        P[i] = vec2(0.0);
+    }
+    coordComputed = false;
+
+    coordinates();
+    vec2 P0 = P[0];
+    vec2 P1 = P[1];
+    vec2 Q0 = vec2(0.2, 0.0);
+    vec2 Q1 = vec2(0.0, 0.3);
+
+    for(int i = 0; i < 7; i++) {
+        P[i] = hypTranslate(P0, P1, Q0, Q1, P[i]);
+    }
 }
 
 float insideFD(vec2 st){
