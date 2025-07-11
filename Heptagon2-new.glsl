@@ -100,7 +100,7 @@ vec2 T4inv(vec2 z){ return ind(ina(z)); }
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec2 uv = fragCoord/iResolution.xy-0.5;
-    uv *= 2.*vec2(iResolution.x/iResolution.y, 1.);
+    uv *= 3.*vec2(iResolution.x/iResolution.y, 1.);
     fragColor=vec4(0.);
     
     float shade = 1. - smoothstep(0.95, 1.0, length(uv));
@@ -109,7 +109,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
     index = int[8](0, 2, 5, 6, 1, 3, 7, 4);
 
-    O[0]=vec2(-0.09, -0.69);
+    O[0] = P[3];
+
     O[1] = T1(O[0]);
     O[2] = T3inv(O[1]);
     O[3] = T4(O[2]);
@@ -117,6 +118,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     O[5] = T2(O[4]);
     O[6] = T3(O[5]);
     O[7] = T2inv(O[6]);
+    moveO0();
     
     float s = 1.0;
     for (int i = 0; i < 8; i++) {
@@ -124,7 +126,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     }
     shade *= step(1.0, (1. - s)) * 0.3 + 0.7;  // Adjust shading based on geodesic product / 根据测地线乘积调整着色
 
-    for(int i = 0; i < 8; i++) {
+    for(int i = 0; i < 0; i++) {
         uv = fold(uv, O[0], O[4], O[1], O[3]).xy;
         uv = fold(uv, O[0], O[2], O[7], O[3]).xy;
         uv = fold(uv, O[2], O[5], O[1], O[6]).xy;

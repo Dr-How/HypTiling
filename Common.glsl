@@ -11,7 +11,8 @@ const float PI = 3.14159265358979323846;
 float angles[7];  // Interior angles in degrees - 内角度数
 float edges[7];   // Edge lengths - 边长
 vec2 P[7];        // Vertex positions - 顶点位置
-vec2 O[8];        // Positions of vertices of the fundamental octagon - 基本八边形的顶点位置
+vec2 O[8];        // Vertices of the fundamental octagon - 基本八边形的顶点
+int index[8];     // Octagon vertex indices (group action order) - 基本八边形顶点索引（群作用顺序）
 
 // Forward declaration
 // 前向声明
@@ -106,6 +107,16 @@ vec2 hypMid(vec2 z1, vec2 z2) {
     // Transform back to original coordinates
     // 变换回原始坐标
     return hypTranslate(-z1, ww);
+}
+
+// Compute the angle between two geodesics at z0 in the Poincaré disk model.
+// Returns the signed angle from z1 to z2 at z0, in [0, 2π).
+// 计算庞加莱圆盘模型中以z0为顶点的两条测地线之间的有向角度，结果范围为[0, 2π)。
+float hypAngle(vec2 z0, vec2 z1, vec2 z2) {
+    vec2 w1 = hypTranslate(z0, z1);
+    vec2 w2 = hypTranslate(z0, z2);
+    float angle = atan(w1.y, w1.x) - atan(w2.y, w2.x);
+    return mod(angle, 2.0 * PI);
 }
 
 // ============================================================================
@@ -373,4 +384,44 @@ void coordinates() {
         P[i] = hypTranslate(center, P[i]);
     }
     coordComputed = true;
+}
+// ============================================================================
+// OCTAGON VERTEX ACCESS AND TRANSFORMATION - 八边形顶点访问与变换
+// ============================================================================
+
+// Return the i-th vertex of the fundamental octagon in group order, wrapping index as needed.
+// 返回群作用顺序的第i个基本八边形顶点，自动处理索引环绕。
+vec2 o(int i) {
+    // Wrap negative indices to the last vertex, otherwise wrap modulo 8
+    // 负索引返回最后一个顶点，否则按8取模
+    if (i < 0) return O[index[7]];
+    return O[index[i % 8]];
+}
+
+// Move O[0] in the direction determined by the angles between consecutive octagon vertices.
+// Used to adjust O[0] for symmetry or force-based relaxation.
+// 按相邻八边形顶点间的角度方向移动O[0]，用于对称性调整或弹性力松弛。
+// Returns the accumulated direction vector f.
+// 返回累积方向向量f。
+vec2 moveO0() {
+    // Compute initial direction from o(0) to o(1)
+    // 计算o(0)到o(1)的初始方向
+    vec2 w = hypTranslate(o(0), o(1));
+    float angle = mod(atan(w.y, w.x), 2.0 * PI);
+    vec2 f = normalize(w); // Initialize direction vector
+
+    // Accumulate direction by rotating through each vertex
+    // 通过遍历每个顶点累积方向
+    for (int i = 0; i < 7; i++) {
+        int j = index[i];
+        angle += hypAngle(o(j), o(j - 1), o(j + 1));
+        angle = mod(angle, 2.0 * PI);
+        f += vec2(cos(angle), sin(angle));
+    }
+
+    // Move O[0] by a small step in direction f
+    // 沿f方向微小移动O[0]
+    vec2 newO0 = hypTranslate(-o(0), 0.1 * f);
+    O[0] = newO0;
+    return f;
 }

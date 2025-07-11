@@ -124,6 +124,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     //     hypGeodesic(uv, p0, p5)
     // ))*.3+.7;
 
+    index = int[8](0, 1, 4, 6, 2, 7, 3, 5);
     // Vertices of the fundamental octagon
     O[0] = vec2(-0.77, 0.21);
     O[1] = inT2(O[0]);
@@ -135,16 +136,11 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     O[7] = inT3(O[6]);
     
     // Shade the interior of the octagon
-    shade *= step(1.0, (1. -
-        hypGeodesic(uv, O[1], O[0]) *
-        hypGeodesic(uv, O[4], O[1]) *
-        hypGeodesic(uv, O[6], O[4]) *
-        hypGeodesic(uv, O[2], O[6]) *
-        hypGeodesic(uv, O[7], O[2]) *
-        hypGeodesic(uv, O[3], O[7]) *
-        hypGeodesic(uv, O[5], O[3]) *
-        hypGeodesic(uv, O[0], O[5])
-    ))*.3+.7;
+    float s = 1.0;
+    for (int i = 0; i < 8; i++) {
+        s *= hypGeodesic(uv, o(i+1), o(i));  // Side from o((i+3)%8) to o((i+2)%8) / 从o((i+3)%8)到o((i+2)%8)的边
+    }
+    shade *= step(1.0, (1. - s)) * 0.3 + 0.7;  // Adjust shading based on geodesic product / 根据测地线乘积调整着色
 
     // Test fixedPoints and fold
     // vec4 fixPts = fixedPoints(o0, o1, o7, o2);

@@ -202,37 +202,42 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     // 1.))*.3+.7;
 
     // ============================================================================
-    // FUNDAMENTAL OCTAGON - 基本八边形
+    // FUNDAMENTAL OCTAGON CONSTRUCTION AND SHADING - 基本八边形的构造与着色
     // ============================================================================
     // Define vertices of a fundamental octagon for testing and visualization
     // 定义用于测试和可视化的基本八边形的顶点
-    // This octagon represents a larger fundamental domain in the tiling
-    // 这个八边形代表平铺中基本域
-    // The order of the translations are obtained from the relation given by GAP
-    // 平移的顺序是从GAP中得到的
-    index = int[8](0, 4, 5, 7, 1, 2, 6, 3);
+    // This octagon is constructed by applying a sequence of translations to the initial vertex
+    // 这个八边形通过对初始顶点应用一系列平移变换构造而成
+    // The translation order is determined by group relations (from GAP)
+    // 平移顺序由群关系（来自GAP）确定
+    index = int[8](0, 4, 5, 7, 1, 2, 6, 3); // 八边形顶点索引顺序
 
-    O[0] = vec2(-0.625, 0.545);  // Starting vertex / 起始顶点
-    // o0 = inT1(P0);  // Alternative: derive from fundamental heptagon / 替代方案：从基本七边形导出
+    // Start from the first vertex of the fundamental heptagon
+    // 从基本七边形的第一个顶点开始
+    O[0] = P[0];
 
-    O[1] = T1(O[0]);  // Apply translation T1 / 应用平移T1
-    O[2] = T2(O[1]);  // Apply translation T2 / 应用平移T2
-    O[3] = inT1(O[2]); // Apply inverse of T1 / 应用T1的逆
-    O[4] = T4(O[3]);   // Apply translation T4 / 应用平移T4
-    O[5] = T3(O[4]);   // Apply translation T3 / 应用平移T3
-    O[6] = inT4(O[5]); // Apply inverse of T4 / 应用T4的逆
-    O[7] = inT2(O[6]); // Apply inverse of T2 / 应用T2的逆
-    // vec2 o8 = inT3(o7); // Additional vertex if needed / 如果需要额外的顶点
+    // Relax O[0] to improve symmetry using elastic force (moveO0)
+    // 使用弹性力(moveO0)多次调整O[0]以提高对称性
+    // Repeat several times for convergence
+    // 重复多次以收敛
+    for (int i = 0; i < 12; i++) {
+        O[1] = T1(O[0]);      // 对O[0]应用T1变换得到O[1]
+        O[2] = T2(O[1]);      // 对O[1]应用T2变换得到O[2]
+        O[3] = inT1(O[2]);    // 对O[2]应用T1的逆变换得到O[3]
+        O[4] = T4(O[3]);      // 对O[3]应用T4变换得到O[4]
+        O[5] = T3(O[4]);      // 对O[4]应用T3变换得到O[5]
+        O[6] = inT4(O[5]);    // 对O[5]应用T4的逆变换得到O[6]
+        O[7] = inT2(O[6]);    // 对O[6]应用T2的逆变换得到O[7]
+        moveO0();             // 调整O[0]以优化八边形的对称性
+    }
 
-    // Shade the interior of the octagon with a darker color
-    // 用较暗的颜色为八边形内部着色
-    // This creates a visual boundary for the fundamental domain
-    // 这为基本域创建视觉边界
+    // Shade the interior of the octagon with a darker color for visual emphasis
+    // 用较暗的颜色为八边形内部着色以突出显示
     float s = 1.0;
     for (int i = 0; i < 8; i++) {
-        s *= hypGeodesic(uv, o(i+1), o(i));  // Side from o((i+3)%8) to o((i+2)%8) / 从o((i+3)%8)到o((i+2)%8)的边
+        s *= hypGeodesic(uv, o(i + 1), o(i)); // 计算uv点到每条八边形边的测地线关系
     }
-    shade *= step(1.0, (1. - s)) * 0.3 + 0.7;  // Adjust shading based on geodesic product / 根据测地线乘积调整着色
+    shade *= step(1.0, 1.0 - s) * 0.3 + 0.7; // 根据s调整着色，突出八边形内部
 
     // ============================================================================
     // TESTING FUNCTIONS (COMMENTED OUT) - 测试函数（已注释）
@@ -316,8 +321,6 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     fragColor += vec4(col6, 1.) * insideFD(e(ina(uv)));
     fragColor += vec4(colC, 1.) * insideFD(a(inc(uv)));
     fragColor += vec4(col9, 1.) * insideFD(inc(inc(uv)));
-    fragColor += vec4(colB, 1.) * insideFD(b(ina(inc(uv))));
-    fragColor += vec4(col7, 1.) * insideFD(c(e(a(uv))));
     fragColor += vec4(colB, 1.) * insideFD(ina(d(uv)));
     fragColor += vec4(col2, 1.) * insideFD(b(c(uv)));
     fragColor += vec4(col8, 1.) * insideFD(ina(c(uv)));
@@ -326,9 +329,13 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     fragColor += vec4(col8, 1.) * insideFD(d(c(a(uv))));
     fragColor += vec4(col9, 1.) * insideFD(c(c(a(uv))));
     fragColor += vec4(col2, 1.) * insideFD((e(inc(uv))));
-    fragColor += vec4(colA, 1.) * insideFD(d(a(e(uv))));
+    fragColor += vec4(colC, 1.) * insideFD(inc(d(uv)));
+    fragColor += vec4(col9, 1.) * insideFD(a(d(uv)));
+    fragColor += vec4(col9, 1.) * insideFD(b(e(a(uv))));
+    fragColor += vec4(colA, 1.) * insideFD(a(e(a(uv))));
+    fragColor += vec4(col6, 1.) * insideFD(ina(e(a(uv))));
+    fragColor += vec4(col9, 1.) * insideFD(ina(d(a(uv))));
     fragColor += vec4(col9, 1.) * insideFD(e(a(e(uv))));
-    fragColor += vec4(col9, 1.) * insideFD(ina(inc(inc(uv))));
 
     // ============================================================================
     // ALTERNATIVE COLORING METHOD (COMMENTED OUT) - 替代着色方法（已注释）
