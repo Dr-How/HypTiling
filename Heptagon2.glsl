@@ -4,7 +4,7 @@ Tiling data computed using exterior program.
 
 List of heptagonal monohedral tilings:
 Tiling 1 : https://www.shadertoy.com/view/t3t3Df
-Tiling 2 : https://www.shadertoy.com/view/XfycRy
+Tiling 2 : https://www.shadertoy.com/view/t3KGR1
 Tiling 3 : https://www.shadertoy.com/view/33y3R1
 */
 
