@@ -125,26 +125,25 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     // ))*.3+.7;
 
     // Vertices of the fundamental octagon
-    vec2[8] o;
-    o[0] = vec2(-0.77, 0.21);
-    o[1] = inT2(o[0]);
-    o[2] = T4(o[1]);
-    o[3] = T1(o[2]);
-    o[4] = T3(o[3]);
-    o[5] = T2(o[4]);
-    o[6] = inT1(o[5]);
-    o[7] = inT3(o[6]);
+    O[0] = vec2(-0.77, 0.21);
+    O[1] = inT2(O[0]);
+    O[2] = T4(O[1]);
+    O[3] = T1(O[2]);
+    O[4] = T3(O[3]);
+    O[5] = T2(O[4]);
+    O[6] = inT1(O[5]);
+    O[7] = inT3(O[6]);
     
     // Shade the interior of the octagon
     shade *= step(1.0, (1. -
-        hypGeodesic(uv, o[1], o[0]) *
-        hypGeodesic(uv, o[4], o[1]) *
-        hypGeodesic(uv, o[6], o[4]) *
-        hypGeodesic(uv, o[2], o[6]) *
-        hypGeodesic(uv, o[7], o[2]) *
-        hypGeodesic(uv, o[3], o[7]) *
-        hypGeodesic(uv, o[5], o[3]) *
-        hypGeodesic(uv, o[0], o[5])
+        hypGeodesic(uv, O[1], O[0]) *
+        hypGeodesic(uv, O[4], O[1]) *
+        hypGeodesic(uv, O[6], O[4]) *
+        hypGeodesic(uv, O[2], O[6]) *
+        hypGeodesic(uv, O[7], O[2]) *
+        hypGeodesic(uv, O[3], O[7]) *
+        hypGeodesic(uv, O[5], O[3]) *
+        hypGeodesic(uv, O[0], O[5])
     ))*.3+.7;
 
     // Test fixedPoints and fold
@@ -156,10 +155,10 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     // shade += 1. - smoothstep(0.0, 0.01, abs(foldedUV.z-0.0));
 
     for(int i = 0; i <8 ; i++) {
-        uv = fold(uv, o[0], o[1], o[7], o[2]).xy;
-        uv = fold(uv, o[1], o[4], o[0], o[5]).xy;
-        uv = fold(uv, o[4], o[6], o[3], o[7]).xy;
-        uv = fold(uv, o[6], o[2], o[5], o[3]).xy;
+        uv = fold(uv, O[0], O[1], O[7], O[2]).xy;
+        uv = fold(uv, O[1], O[4], O[0], O[5]).xy;
+        uv = fold(uv, O[4], O[6], O[3], O[7]).xy;
+        uv = fold(uv, O[6], O[2], O[5], O[3]).xy;
     }
     // 12 well-distinguishable, visually pleasing tile colors
     vec3 col1 = vec3(0.90, 0.10, 0.15);   // vivid red

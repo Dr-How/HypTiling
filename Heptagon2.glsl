@@ -121,32 +121,31 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     
     init();
 
-    vec2[8] o;
-    o[0]=vec2(-0.09, -0.69);
-    o[1] = T1(o[0]);
-    o[2] = T3inv(o[1]);
-    o[3] = T4(o[2]);
-    o[4] = T1inv(o[3]);
-    o[5] = T2(o[4]);
-    o[6] = T3(o[5]);
-    o[7] = T2inv(o[6]);
+    O[0]=vec2(-0.09, -0.69);
+    O[1] = T1(O[0]);
+    O[2] = T3inv(O[1]);
+    O[3] = T4(O[2]);
+    O[4] = T1inv(O[3]);
+    O[5] = T2(O[4]);
+    O[6] = T3(O[5]);
+    O[7] = T2inv(O[6]);
     
     shade *=step(1.0, (1.-
-    hypGeodesic(uv, o[2], o[0]) *
-    hypGeodesic(uv, o[5], o[2]) *
-    hypGeodesic(uv, o[6], o[5]) *
-    hypGeodesic(uv, o[1], o[6]) *
-    hypGeodesic(uv, o[3], o[1]) *
-    hypGeodesic(uv, o[7], o[3]) *
-    hypGeodesic(uv, o[4], o[7]) *
-    hypGeodesic(uv, o[0], o[4])
+    hypGeodesic(uv, O[2], O[0]) *
+    hypGeodesic(uv, O[5], O[2]) *
+    hypGeodesic(uv, O[6], O[5]) *
+    hypGeodesic(uv, O[1], O[6]) *
+    hypGeodesic(uv, O[3], O[1]) *
+    hypGeodesic(uv, O[7], O[3]) *
+    hypGeodesic(uv, O[4], O[7]) *
+    hypGeodesic(uv, O[0], O[4])
     ))*.3+.7;
 
     for(int i = 0; i < 8; i++) {
-        uv = fold(uv, o[0], o[4], o[1], o[3]).xy;
-        uv = fold(uv, o[0], o[2], o[7], o[3]).xy;
-        uv = fold(uv, o[2], o[5], o[1], o[6]).xy;
-        uv = fold(uv, o[5], o[6], o[4], o[7]).xy;
+        uv = fold(uv, O[0], O[4], O[1], O[3]).xy;
+        uv = fold(uv, O[0], O[2], O[7], O[3]).xy;
+        uv = fold(uv, O[2], O[5], O[1], O[6]).xy;
+        uv = fold(uv, O[5], O[6], O[4], O[7]).xy;
     }
     
         // Color the inside of the fundamental domain

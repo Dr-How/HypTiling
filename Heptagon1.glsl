@@ -210,16 +210,15 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     // 这个八边形代表平铺中基本域
     // The order of the translations are obtained from the relation given by GAP
     // 平移的顺序是从GAP中得到的
-    vec2[8] o;
-    o[0] = vec2(-0.625, 0.545);  // Starting vertex / 起始顶点
+    O[0] = vec2(-0.625, 0.545);  // Starting vertex / 起始顶点
     // o0 = inT1(P0);  // Alternative: derive from fundamental heptagon / 替代方案：从基本七边形导出
-    o[1] = T1(o[0]);  // Apply translation T1 / 应用平移T1
-    o[2] = T2(o[1]);  // Apply translation T2 / 应用平移T2
-    o[3] = inT1(o[2]); // Apply inverse of T1 / 应用T1的逆
-    o[4] = T4(o[3]);   // Apply translation T4 / 应用平移T4
-    o[5] = T3(o[4]);   // Apply translation T3 / 应用平移T3
-    o[6] = inT4(o[5]); // Apply inverse of T4 / 应用T4的逆
-    o[7] = inT2(o[6]); // Apply inverse of T2 / 应用T2的逆
+    O[1] = T1(O[0]);  // Apply translation T1 / 应用平移T1
+    O[2] = T2(O[1]);  // Apply translation T2 / 应用平移T2
+    O[3] = inT1(O[2]); // Apply inverse of T1 / 应用T1的逆
+    O[4] = T4(O[3]);   // Apply translation T4 / 应用平移T4
+    O[5] = T3(O[4]);   // Apply translation T3 / 应用平移T3
+    O[6] = inT4(O[5]); // Apply inverse of T4 / 应用T4的逆
+    O[7] = inT2(O[6]); // Apply inverse of T2 / 应用T2的逆
     // vec2 o8 = inT3(o7); // Additional vertex if needed / 如果需要额外的顶点
 
     // Shade the interior of the octagon with a darker color
@@ -227,14 +226,14 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     // This creates a visual boundary for the fundamental domain
     // 这为基本域创建视觉边界
     shade *= step(1.0, (1.-
-        hypGeodesic(uv, o[4], o[0]) *  // Side from o4 to o0 / 从o4到o0的边
-        hypGeodesic(uv, o[5], o[4]) *  // Side from o5 to o4 / 从o5到o4的边
-        hypGeodesic(uv, o[7], o[5]) *  // Side from o7 to o5 / 从o7到o5的边
-        hypGeodesic(uv, o[1], o[7]) *  // Side from o1 to o7 / 从o1到o7的边
-        hypGeodesic(uv, o[2], o[1]) *  // Side from o2 to o1 / 从o2到o1的边
-        hypGeodesic(uv, o[6], o[2]) *  // Side from o6 to o2 / 从o6到o2的边
-        hypGeodesic(uv, o[3], o[6]) *  // Side from o3 to o6 / 从o3到o6的边
-        hypGeodesic(uv, o[0], o[3]) *  // Side from o0 to o3 / 从o0到o3的边
+        hypGeodesic(uv, O[4], O[0]) *  // Side from o4 to o0 / 从o4到o0的边
+        hypGeodesic(uv, O[5], O[4]) *  // Side from o5 to o4 / 从o5到o4的边
+        hypGeodesic(uv, O[7], O[5]) *  // Side from o7 to o5 / 从o7到o5的边
+        hypGeodesic(uv, O[1], O[7]) *  // Side from o1 to o7 / 从o1
+        hypGeodesic(uv, O[2], O[1]) *  // Side from o2 to o1 / 从o2到o1的边
+        hypGeodesic(uv, O[6], O[2]) *  // Side from o6 to o2 / 从o6到o2的边
+        hypGeodesic(uv, O[3], O[6]) *  // Side from o3 to o6 / 从o3到o6的边
+        hypGeodesic(uv, O[0], O[3]) *  // Side from o0 to o3 / 从o0到o3的边
     1.))*.3+.7;
 
     // ============================================================================
@@ -261,10 +260,10 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     for(int i = 0; i < 6; i++) {
         // Fold using different pairs of geodesics to cover all cases
         // 使用不同的测地线对进行折叠以覆盖所有情况
-        uv = fold(uv, o[3], o[0], o[2], o[1]).xy;  // Fold across geodesic o3-o0 vs o2-o1 / 跨测地线o3-o0 vs o2-o1折叠
-        uv = fold(uv, o[0], o[4], o[7], o[5]).xy;  // Fold across geodesic o0-o4 vs o7-o5 / 跨测地线o0-o4 vs o7-o5折叠
-        uv = fold(uv, o[7], o[1], o[6], o[2]).xy;  // Fold across geodesic o7-o1 vs o6-o2 / 跨测地线o7-o1 vs o6-o2折叠
-        uv = fold(uv, o[4], o[5], o[3], o[6]).xy;  // Fold across geodesic o4-o5 vs o3-o6 / 跨测地线o4-o5 vs o3-o6折叠
+        uv = fold(uv, O[3], O[0], O[2], O[1]).xy;  // Fold across geodesic o3-o0 vs o2-o1 / 跨测地线o3-o0 vs o2-o1折叠
+        uv = fold(uv, O[0], O[4], O[7], O[5]).xy;  // Fold across geodesic o0-o4 vs o7-o5 / 跨测地线o0-o4 vs o7-o5折叠
+        uv = fold(uv, O[7], O[1], O[6], O[2]).xy;  // Fold across geodesic o7-o1 vs o6-o2 / 跨测地线o7-o1 vs o6-o2折叠
+        uv = fold(uv, O[4], O[5], O[3], O[6]).xy;  // Fold across geodesic o4-o5 vs o3-o6 / 跨测地线o4-o5 vs o3-o6折叠
     }
 
     // Alternative visualization: show distance to origin after folding

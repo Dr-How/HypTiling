@@ -11,6 +11,7 @@ const float PI = 3.14159265358979323846;
 float angles[7];  // Interior angles in degrees - 内角度数
 float edges[7];   // Edge lengths - 边长
 vec2 P[7];        // Vertex positions - 顶点位置
+vec2 O[8];        // Positions of vertices of the fundamental octagon - 基本八边形的顶点位置
 
 // Forward declaration
 // 前向声明
