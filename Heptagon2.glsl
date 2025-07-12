@@ -122,7 +122,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         moveO0();
     }
     
-    shade *= step(0.05, length(uv-O[0]));
+    shade *= step(0.01, length(uv-O[0]));
 
     float s = 1.0;
     for (int i = 0; i < 8; i++) {
@@ -169,14 +169,18 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     fragColor += vec4(colB, 1.) * inside3(d(uv));
     fragColor += vec4(col7, 1.) * inside3(ind(uv));
     fragColor += vec4(colC, 1.) * inside4(d(uv));
-    fragColor += vec4(col8, 1.) * inside4(ind(uv));
     fragColor += vec4(col8, 1.) * inside4(ina(inb(uv))); 
-    fragColor += vec4(colC, 1.) * inside4(ina(inb(a((uv)))));
+    fragColor += vec4(colC, 1.) * inside4(ina(inb(a(uv))));
     fragColor += vec4(col4, 1.) * inside4(ina(inb(ina((uv)))));
     fragColor += vec4(colA, 1.) * inside2(b(a(uv))); 
     fragColor += vec4(col4, 1.) * inside4(d(a(uv)));
     fragColor += vec4(col5, 1.) * inside1(a(T1(uv)));
-    fragColor += vec4(col5, 1.) * inside1(a((uv)));
+    fragColor += vec4(colB, 1.) * inside3(d(T3inv(uv)));
+    fragColor += vec4(col4, 1.) * inside4(d(a(T2(uv))));
+    fragColor += vec4(col4, 1.) * inside4(ina(inb(ina(T4(uv)))));
+    fragColor += vec4(col4, 1.) * inside4(d(a(T2(T4(uv)))));
+    fragColor += vec4(col4, 1.) * inside4(d(a(T2(T4(T1inv(uv))))));
+    fragColor += vec4(col8, 1.) * inside4(ina(inb(T4inv(uv)))); 
     
     fragColor.rgb *= shade;
 }

@@ -139,8 +139,9 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         O[7] = inT3(O[6]);
         moveO0();
     }
-
     
+    shade *= step(0.01, length(uv-O[0]));
+
     // Shade the interior of the octagon
     float s = 1.0;
     for (int i = 0; i < 8; i++) {

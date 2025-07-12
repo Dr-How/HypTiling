@@ -398,6 +398,8 @@ vec2 o(int i) {
     return O[index[i % 8]];
 }
 
+// Return the index of the i-th vertex of the fundamental octagon in group order.
+// 返回群作用顺序的第i个基本八边形顶点的索引。
 int xedni(int i) {
     for(int j = 0; j < 8; j++) {
         if(index[j] == i) {
