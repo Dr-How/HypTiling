@@ -109,22 +109,28 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
     index = int[8](0, 2, 5, 6, 1, 3, 7, 4);
 
-    O[0]=vec2(-0.09, -0.69);
-    O[1] = T1(O[0]);
-    O[2] = T3inv(O[1]);
-    O[3] = T4(O[2]);
-    O[4] = T1inv(O[3]);
-    O[5] = T2(O[4]);
-    O[6] = T3(O[5]);
-    O[7] = T2inv(O[6]);
+    O[0] = vec2(0.0);
+
+    for(int i = 0; i < 10; i++) {
+        O[1] = T1(O[0]);
+        O[2] = T3inv(O[1]);
+        O[3] = T4(O[2]);
+        O[4] = T1inv(O[3]);
+        O[5] = T2(O[4]);
+        O[6] = T3(O[5]);
+        O[7] = T2inv(O[6]);
+        moveO0();
+    }
     
+    shade *= step(0.05, length(uv-O[0]));
+
     float s = 1.0;
     for (int i = 0; i < 8; i++) {
         s *= hypGeodesic(uv, o(i+1), o(i));  // Side from o((i+3)%8) to o((i+2)%8) / 从o((i+3)%8)到o((i+2)%8)的边
     }
     shade *= step(1.0, (1. - s)) * 0.3 + 0.7;  // Adjust shading based on geodesic product / 根据测地线乘积调整着色
 
-    for(int i = 0; i < 8; i++) {
+    for(int i = 0; i < 6; i++) {
         uv = fold(uv, O[0], O[4], O[1], O[3]).xy;
         uv = fold(uv, O[0], O[2], O[7], O[3]).xy;
         uv = fold(uv, O[2], O[5], O[1], O[6]).xy;
@@ -168,9 +174,9 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     fragColor += vec4(colC, 1.) * inside4(ina(inb(a((uv)))));
     fragColor += vec4(col4, 1.) * inside4(ina(inb(ina((uv)))));
     fragColor += vec4(colA, 1.) * inside2(b(a(uv))); 
-    fragColor += vec4(col2, 1.) * inside2(b(a(a(uv))));
     fragColor += vec4(col4, 1.) * inside4(d(a(uv)));
-    fragColor += vec4(col8, 1.) * inside4(d(ina(uv)));
+    fragColor += vec4(col5, 1.) * inside1(a(T1(uv)));
+    fragColor += vec4(col5, 1.) * inside1(a((uv)));
     
     fragColor.rgb *= shade;
 }

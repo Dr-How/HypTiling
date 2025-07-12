@@ -398,6 +398,14 @@ vec2 o(int i) {
     return O[index[i % 8]];
 }
 
+int xedni(int i) {
+    for(int j = 0; j < 8; j++) {
+        if(index[j] == i) {
+            return j;
+        }
+    }
+}
+
 // Move O[0] in the direction determined by the angles between consecutive octagon vertices.
 // Used to adjust O[0] for symmetry or force-based relaxation.
 // 按相邻八边形顶点间的角度方向移动O[0]，用于对称性调整或弹性力松弛。
@@ -413,7 +421,7 @@ vec2 moveO0() {
     // Accumulate direction by rotating through each vertex
     // 通过遍历每个顶点累积方向
     for (int i = 0; i < 7; i++) {
-        int j = index[i];
+        int j = xedni(i);
         angle += hypAngle(o(j), o(j - 1), o(j + 1));
         angle = mod(angle, 2.0 * PI);
         f += vec2(cos(angle), sin(angle));

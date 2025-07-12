@@ -125,21 +125,15 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     // ))*.3+.7;
 
     index = int[8](0, 1, 4, 6, 2, 7, 3, 5);
-
     // Vertices of the fundamental octagon
-    O[0] = vec2(0.0);
-
-    for(int i = 0; i < 10; i++) {
-        O[1] = inT2(O[0]);
-        O[2] = T4(O[1]);
-        O[3] = T1(O[2]);
-        O[4] = T3(O[3]);
-        O[5] = T2(O[4]);
-        O[6] = inT1(O[5]);
-        O[7] = inT3(O[6]);
-        moveO0();
-    }
-
+    O[0] = vec2(-0.77, 0.21);
+    O[1] = inT2(O[0]);
+    O[2] = T4(O[1]);
+    O[3] = T1(O[2]);
+    O[4] = T3(O[3]);
+    O[5] = T2(O[4]);
+    O[6] = inT1(O[5]);
+    O[7] = inT3(O[6]);
     
     // Shade the interior of the octagon
     float s = 1.0;
@@ -193,22 +187,21 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     fragColor += vec4(col8, 1.) * insideFD(inC(B(uv)));
     fragColor += vec4(col4, 1.) * insideFD(C(d(uv)));
     fragColor += vec4(colB, 1.) * insideFD(inB(inB(uv)));
+    fragColor += vec4(col6, 1.) * insideFD(inB(a(uv)));
+    fragColor += vec4(col2, 1.) * insideFD(B(a(C(uv))));
     fragColor += vec4(col7, 1.) * insideFD(d(ina(C(uv))));
     fragColor += vec4(col9, 1.) * insideFD(C(B(C(uv))));
+    fragColor += vec4(colB, 1.) * insideFD(C(C(B(C(uv)))));
     fragColor += vec4(colA, 1.) * insideFD(inB(inB(inB(uv))));
+    fragColor += vec4(col9, 1.) * insideFD(C(a(uv)));
     fragColor += vec4(colA, 1.) * insideFD(ina(inC(uv)));
     fragColor += vec4(colC, 1.) * insideFD(d(a(uv)));
+    fragColor += vec4(colC, 1.) * insideFD(B(C(d(uv))));
     fragColor += vec4(colC, 1.) * insideFD(C(C(uv)));
-    fragColor += vec4(col3, 1.) * insideFD(B(C(uv)));
-    fragColor += vec4(col5, 1.) * insideFD(inB(T1(uv)));
-    fragColor += vec4(colC, 1.) * insideFD(ina(d(ina(uv))));
-    fragColor += vec4(colA, 1.) * insideFD((a(B(uv))));
-    fragColor += vec4(colC, 1.) * insideFD((a(d(uv))));
-    fragColor += vec4(colC, 1.) * insideFD(inB(ina(inB(uv))));
-    fragColor += vec4(colA, 1.) * insideFD(d(ina(inB(uv))));
-    fragColor += vec4(colA, 1.) * insideFD(C(C(C(uv))));
-    fragColor += vec4(colA, 1.) * insideFD(C(a(d(uv))));
-    fragColor += vec4(colA, 1.) * insideFD(C(inB(inB(ina(uv)))));
+    fragColor += vec4(colB, 1.) * insideFD(C(C(a(uv))));
+    fragColor += vec4(colC, 1.) * insideFD(inC(inB(inB(inB(uv)))));
+    fragColor += vec4(colC, 1.) * insideFD(inC(d(C(a(uv)))));
+    fragColor += vec4(colB, 1.) * insideFD(a(C(C(uv))));
     
     // Coloring two generations suffices
     /* for (int i = 0; i < 8; i++) { 
