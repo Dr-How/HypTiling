@@ -11,8 +11,10 @@ const float PI = 3.14159265358979323846;
 float angles[7];  // Interior angles in degrees - 内角度数
 float edges[7];   // Edge lengths - 边长
 vec2 P[7];        // Vertex positions - 顶点位置
-vec2 O[8];        // Vertices of the fundamental octagon - 基本八边形的顶点
-int index[8];     // Octagon vertex indices (group action order) - 基本八边形顶点索引（群作用顺序）
+vec2 O[8];        // Vertices of the fundamental octagon (group action order) - 基本八边形的顶点（群作用顺序）
+int index[8];
+// For the i-th vertex in the clockwise order, index[i] is its position in the group action order.
+// 对顺时针顺序的第i个顶点，index[i]是其在群作用顺序中的位置。
 
 // Forward declaration
 // 前向声明
@@ -386,52 +388,49 @@ void coordinates() {
     coordComputed = true;
 }
 // ============================================================================
-// OCTAGON VERTEX ACCESS AND TRANSFORMATION - 八边形顶点访问与变换
+// OCTAGON VERTEX ACCESS AND ADJUSTMENT - 八边形顶点访问与调整
 // ============================================================================
 
-// Return the i-th vertex of the fundamental octagon in group order, wrapping index as needed.
-// 返回群作用顺序的第i个基本八边形顶点，自动处理索引环绕。
-vec2 o(int i) {
-    // Wrap negative indices to the last vertex, otherwise wrap modulo 8
+// Returns the i-th vertex of the fundamental octagon in clockwise order, with index wrapping.
+// 返回顺时针顺序的第i个八边形顶点，支持索引环绕。
+vec2 o(int i) { // clockwise order
+    // If i is negative, wrap to the last vertex; otherwise, wrap modulo 8.
     // 负索引返回最后一个顶点，否则按8取模
-    if (i < 0) return O[index[7]];
-    return O[index[i % 8]];
+    return O[index[i < 0 ? 7 : (i % 8)]];
 }
 
-// Return the index of the i-th vertex of the fundamental octagon in group order.
-// 返回群作用顺序的第i个基本八边形顶点的索引。
-int xedni(int i) {
-    for(int j = 0; j < 8; j++) {
-        if(index[j] == i) {
-            return j;
-        }
+// For the i-th vertex in the group action order,
+// xedni(i) is its position in the clockwise order.
+// 对于群作用顺序的第i个八边形顶点，xedni(i)是其在顺时针顺序中的位置。
+int xedni(int i) { // group action to clockwise order
+    // Linear search for the index; returns -1 if not found (should not happen).
+    // 线性查找索引；未找到返回-1（理论上不会发生）。
+    for (int j = 0; j < 8; j++) {
+        if (index[j] == i) return j;
     }
+    return -1;
 }
 
-// Move O[0] in the direction determined by the angles between consecutive octagon vertices.
-// Used to adjust O[0] for symmetry or force-based relaxation.
-// 按相邻八边形顶点间的角度方向移动O[0]，用于对称性调整或弹性力松弛。
-// Returns the accumulated direction vector f.
-// 返回累积方向向量f。
+// Adjusts O[0] to improve the shape of the octagon by moving it in the direction
+// determined by the sum of unit vectors at each vertex. Returns the accumulated direction vector.
+// 通过累加每个顶点的单位向量方向调整O[0]以改善八边形形状，返回累积后的方向向量。
 vec2 moveO0() {
-    // Compute initial direction from o(0) to o(1)
-    // 计算o(0)到o(1)的初始方向
+    // Compute the initial direction from o(0) to o(1)
+    // 计算从o(0)到o(1)的初始方向
     vec2 w = hypTranslate(o(0), o(1));
     float angle = mod(atan(w.y, w.x), 2.0 * PI);
-    vec2 f = normalize(w); // Initialize direction vector
+    vec2 f = normalize(w);
 
-    // Accumulate direction by rotating through each vertex
-    // 通过遍历每个顶点累积方向
-    for (int i = 0; i < 7; i++) {
-        int j = xedni(i);
-        angle += hypAngle(o(j), o(j - 1), o(j + 1));
-        angle = mod(angle, 2.0 * PI);
+    // 遍历所有顶点，累加方向
+    for (int i = 0; i < 7; i++) { // i is the group action order
+        int j = xedni(i); // j is the clockwise order
+        // 防御性检查：未找到则跳过（理论上不会发生）
+        if (j < 0) continue;
+        angle = mod(angle + hypAngle(o(j), o(j - 1), o(j + 1)), 2.0 * PI);
         f += vec2(cos(angle), sin(angle));
     }
 
-    // Move O[0] by a small step in direction f
-    // 沿f方向微小移动O[0]
-    vec2 newO0 = hypTranslate(-o(0), 0.1 * f);
-    O[0] = newO0;
+    // 沿着 f 方向微小平移 O[0]
+    O[0] = hypTranslate(-o(0), 0.1 * f);
     return f;
 }

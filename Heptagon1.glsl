@@ -204,33 +204,42 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     // ============================================================================
     // FUNDAMENTAL OCTAGON CONSTRUCTION AND SHADING - 基本八边形的构造与着色
     // ============================================================================
-    // Define vertices of a fundamental octagon for testing and visualization
-    // 定义用于测试和可视化的基本八边形的顶点
+    // Define vertices of a fundamental octagon for visualization
+    // 定义用于可视化的基本八边形的顶点
     // This octagon is constructed by applying a sequence of translations to the initial vertex
     // 这个八边形通过对初始顶点应用一系列平移变换构造而成
     // The translation order is determined by group relations (from GAP)
     // 平移顺序由群关系（来自GAP）确定
-    index = int[8](0, 4, 5, 7, 1, 2, 6, 3); // 八边形顶点索引顺序
 
-    // Start from the origin
-    // 从原点开始
+    // Define vertex ordering for the fundamental octagon
+    // 定义基本八边形的顶点顺序
+    // For the i-th vertex in the clockwiseorder,
+    // index[i] is the position in the group action order.
+    // 对顺时针顺序的第i个顶点，index[i]是其在群作用顺序中的位置。
+    index = int[8](0, 4, 5, 7, 1, 2, 6, 3);
+
+    // Initialize the first vertex at the origin
+    // 在原点初始化第一个顶点
     O[0] = vec2(0.0);
 
-    // Relax O[0] to improve symmetry using elastic force (moveO0)
-    // 使用弹性力(moveO0)多次调整O[0]以提高对称性
-    // Repeat several times for convergence
-    // 重复多次以收敛
     for (int i = 0; i < 10; i++) {
-        O[1] = T1(O[0]);      // 对O[0]应用T1变换得到O[1]
-        O[2] = T2(O[1]);      // 对O[1]应用T2变换得到O[2]
-        O[3] = inT1(O[2]);    // 对O[2]应用T1的逆变换得到O[3]
-        O[4] = T4(O[3]);      // 对O[3]应用T4变换得到O[4]
-        O[5] = T3(O[4]);      // 对O[4]应用T3变换得到O[5]
-        O[6] = inT4(O[5]);    // 对O[5]应用T4的逆变换得到O[6]
-        O[7] = inT2(O[6]);    // 对O[6]应用T2的逆变换得到O[7]
-        moveO0();             // 调整O[0]以优化八边形的对称性
+        // Construct octagon vertices through group transformations
+        // 通过群变换构造八边形顶点
+        O[1] = T1(O[0]);      // Apply T1 transformation
+        O[2] = T2(O[1]);      // Apply T2 transformation  
+        O[3] = inT1(O[2]);    // Apply inverse T1 transformation
+        O[4] = T4(O[3]);      // Apply T4 transformation
+        O[5] = T3(O[4]);      // Apply T3 transformation
+        O[6] = inT4(O[5]);    // Apply inverse T4 transformation
+        O[7] = inT2(O[6]);    // Apply inverse T2 transformation
+        
+        // Optimize O[0] position for improved octagon shape
+        // 优化O[0]位置以改善八边形形状
+        moveO0();
     }
 
+    // Test code to show the position of O[0]
+    // 测试代码显示O[0]的位置
     shade *= step(0.01, length(uv-O[0]));
 
     // Shade the interior of the octagon with a darker color for visual emphasis
