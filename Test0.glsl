@@ -44,37 +44,37 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
 #if pattern == 1
     for(int i = 0; i < 6; i++) {
-        uv = fold(uv, O[0], O[1], O[5], O[4]).xy;  // Fold across geodesic o3-o0 vs o2-o1 / 跨测地线o3-o0 vs o2-o1折叠
-        uv = fold(uv, O[1], O[2], O[6], O[5]).xy;  // Fold across geodesic o0-o4 vs o7-o5 / 跨测地线o0-o4 vs o7-o5折叠
-        uv = fold(uv, O[2], O[3], O[7], O[6]).xy;  // Fold across geodesic o7-o1 vs o6-o2 / 跨测地线o7-o1 vs o6-o2折叠
-        uv = fold(uv, O[3], O[4], O[0], O[7]).xy;  // Fold across geodesic o4-o5 vs o3-o6 / 跨测地线o4-o5 vs o3-o6折叠
+        uv = fold(uv, O[0], O[1], O[5], O[4]).xy;
+        uv = fold(uv, O[1], O[2], O[6], O[5]).xy;
+        uv = fold(uv, O[2], O[3], O[7], O[6]).xy;
+        uv = fold(uv, O[3], O[4], O[0], O[7]).xy;
     }
 #endif
 
 #if pattern == 2
     for(int i = 0; i < 6; i++) {
-        uv = fold(uv, O[0], O[1], O[3], O[2]).xy;  // Fold across geodesic o3-o0 vs o2-o1 / 跨测地线o3-o0 vs o2-o1折叠
-        uv = fold(uv, O[1], O[2], O[4], O[3]).xy;  // Fold across geodesic o0-o4 vs o7-o5 / 跨测地线o0-o4 vs o7-o5折叠
-        uv = fold(uv, O[4], O[5], O[7], O[6]).xy;  // Fold across geodesic o7-o1 vs o6-o2 / 跨测地线o7-o1 vs o6-o2折叠
-        uv = fold(uv, O[5], O[6], O[0], O[7]).xy;  // Fold across geodesic o4-o5 vs o3-o6 / 跨测地线o4-o5 vs o3-o6折叠
+        uv = fold(uv, O[0], O[1], O[3], O[2]).xy;
+        uv = fold(uv, O[1], O[2], O[4], O[3]).xy;
+        uv = fold(uv, O[4], O[5], O[7], O[6]).xy;
+        uv = fold(uv, O[5], O[6], O[0], O[7]).xy;
     }
 #endif
 
 #if pattern == 3
     for(int i = 0; i < 6; i++) {
-        uv = fold(uv, O[0], O[1], O[3], O[2]).xy;  // Fold across geodesic o3-o0 vs o2-o1 / 跨测地线o3-o0 vs o2-o1折叠
-        uv = fold(uv, O[1], O[2], O[5], O[4]).xy;  // Fold across geodesic o0-o4 vs o7-o5 / 跨测地线o0-o4 vs o7-o5折叠
-        uv = fold(uv, O[3], O[4], O[7], O[6]).xy;  // Fold across geodesic o7-o1 vs o6-o2 / 跨测地线o7-o1 vs o6-o2折叠
-        uv = fold(uv, O[5], O[6], O[0], O[7]).xy;  // Fold across geodesic o4-o5 vs o3-o6 / 跨测地线o4-o5 vs o3-o6折叠
+        uv = fold(uv, O[0], O[1], O[3], O[2]).xy;
+        uv = fold(uv, O[1], O[2], O[5], O[4]).xy;
+        uv = fold(uv, O[3], O[4], O[7], O[6]).xy;
+        uv = fold(uv, O[5], O[6], O[0], O[7]).xy;
     }
 #endif
 
 #if pattern == 4
     for(int i = 0; i < 6; i++) {
-        uv = fold(uv, O[0], O[1], O[4], O[3]).xy;  // Fold across geodesic o3-o0 vs o2-o1 / 跨测地线o3-o0 vs o2-o1折叠
-        uv = fold(uv, O[1], O[2], O[5], O[4]).xy;  // Fold across geodesic o0-o4 vs o7-o5 / 跨测地线o0-o4 vs o7-o5折叠
-        uv = fold(uv, O[2], O[3], O[7], O[6]).xy;  // Fold across geodesic o7-o1 vs o6-o2 / 跨测地线o7-o1 vs o6-o2折叠
-        uv = fold(uv, O[5], O[6], O[0], O[7]).xy;  // Fold across geodesic o4-o5 vs o3-o6 / 跨测地线o4-o5 vs o3-o6折叠
+        uv = fold(uv, O[0], O[1], O[4], O[3]).xy;
+        uv = fold(uv, O[1], O[2], O[5], O[4]).xy;
+        uv = fold(uv, O[2], O[3], O[7], O[6]).xy;
+        uv = fold(uv, O[5], O[6], O[0], O[7]).xy;
     }
 #endif
 
