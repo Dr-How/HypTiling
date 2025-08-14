@@ -101,7 +101,7 @@ vec2 T4inv(vec2 z){ return ind(ina(z)); }
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec2 uv = fragCoord/iResolution.xy-0.5;
     uv *= 2.*vec2(iResolution.x/iResolution.y, 1.);
-    fragColor=vec4(0.);
+    fragColor=vec4(0., 0., 0., 1.);
     
     float shade = 1. - smoothstep(0.95, 1.0, length(uv));
     
@@ -122,7 +122,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         moveO0();
     }
     
-    shade *= step(0.01, length(uv-O[0]));
+    // shade *= step(0.01, length(uv-O[0]));
 
     float s = 1.0;
     for (int i = 0; i < 8; i++) {

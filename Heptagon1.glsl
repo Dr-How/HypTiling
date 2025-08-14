@@ -240,7 +240,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
     // Test code to show the position of O[0]
     // 测试代码显示O[0]的位置
-    shade *= step(0.01, length(uv-O[0]));
+    // shade *= step(0.01, length(uv-O[0]));
 
     // Shade the interior of the octagon with a darker color for visual emphasis
     // 用较暗的颜色为八边形内部着色以突出显示
